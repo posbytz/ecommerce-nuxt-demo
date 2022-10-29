@@ -1,0 +1,13 @@
+diff --git a/node_modules/express-session/index.js b/node_modules/express-session/index.js
+index 40a442b..1327901 100644
+--- a/node_modules/express-session/index.js
++++ b/node_modules/express-session/index.js
+@@ -272,7 +272,7 @@ function session(options) {
+           return ret;
+         }
+ 
+-        if (!res._header) {
++        if (!res._header && typeof res._implicitHeader === 'function') {
+           res._implicitHeader()
+         }
+ 

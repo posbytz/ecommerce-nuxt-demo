@@ -1,0 +1,9 @@
+.divider:before,
+.divider:after {
+  height: 1px;
+}
+
+.divider-horizontal:before,
+.divider-horizontal:after {
+  width: 1px;
+}

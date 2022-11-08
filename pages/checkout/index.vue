@@ -13,9 +13,17 @@
       </div>
       <div class="grow place-content-center px-4">
         <ul class="steps">
-          <li data-content="✓" class="step step-primary w-28">Cart</li>
-          <li data-content="" class="step step-primary w-28">Address</li>
-          <li data-content="" class="step w-28">Payment</li>
+          <li
+            v-for="(stepInfo, i) in steps"
+            :data-content="step > i ? '✓' : step === i ? '●' : ''"
+            class="step w-28 cursor-pointer"
+            :class="{
+              'step-primary': step >= i,
+            }"
+            @click="step = i < step ? i : step"
+          >
+            {{ stepInfo.name }}
+          </li>
         </ul>
       </div>
       <div class="flex-none">
@@ -24,75 +32,163 @@
       </div>
     </div>
     <div v-if="cartStore.cart?.items.length" class="flex mx-48">
-      <div class="w-4/6 p-3">
-        <div class="flex items-center justify-between mb-3">
-          <p class="font-medium">{{ cartStore.cart.items.length }} Items</p>
-          <label
-            for="remove-item-modal"
-            class="btn btn-xs btn-link modal-button no-underline hover:no-underline px-0"
+      <div class="w-4/6 px-3 pt-3 pb-5">
+        <template v-if="step === 0">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-medium">{{ cartStore.cart.items.length }} Items</p>
+            <label
+              for="remove-item-modal"
+              class="btn btn-xs btn-link modal-button no-underline hover:no-underline px-0"
+            >
+              Remove
+            </label>
+          </div>
+          <div
+            v-for="(cartItem, index) in cartStore.cart.items"
+            :key="index"
+            class="card card-side rounded border bg-base-100 drop-shadow"
+            :class="{
+              'mb-4': index < cartStore.cart.items.length - 1,
+            }"
           >
-            Remove
-          </label>
-        </div>
-        <div
-          v-for="(cartItem, index) in cartStore.cart.items"
-          :key="index"
-          class="card card-side rounded border bg-base-100"
-          :class="{
-            'mb-4': index < cartStore.cart.items.length - 1,
-          }"
-        >
-          <div class="avatar">
-            <div class="w-32">
-              <img src="https://placeimg.com/120/120/arch" alt="Movie" />
+            <div class="avatar">
+              <div class="w-32">
+                <img src="https://placeimg.com/120/120/arch" alt="Movie" />
+              </div>
+            </div>
+            <div class="card-body justify-between p-4">
+              <div class="flex justify-between">
+                <div class="leading-none">
+                  <h2 class="font-medium">
+                    {{ cartItem.name }}
+                  </h2>
+                  <small class="text-slate-400">{{
+                    cartItem.category.name
+                  }}</small>
+                </div>
+                <label
+                  for="remove-item-modal"
+                  class="btn btn-xs btn-link text-error p-0"
+                  @click="itemToRemove = cartItem"
+                >
+                  <XMarkIcon class="w-6" />
+                </label>
+              </div>
+              <div class="card-actions items-center justify-between">
+                <div class="leading-none">
+                  <p>
+                    <span class="font-medium">{{
+                      $n(cartItem.price, 'currency', 'en-US')
+                    }}</span>
+                    <small v-if="cartItem.mrp > cartItem.price">
+                      <del class="text-xs text-slate-500 ml-1">
+                        {{ $n(cartItem.mrp, 'currency', 'en-US') }}
+                      </del>
+                    </small>
+                  </p>
+                  <small
+                    v-if="cartItem.mrp > cartItem.price"
+                    class="text-xs text-success"
+                  >
+                    {{ $n(cartItem.mrp - cartItem.price, 'currency', 'en-US') }}
+                    OFF
+                  </small>
+                </div>
+                <Stepper
+                  :key="index"
+                  :value="cartItem.quantity"
+                  @change="(value) => onChangeQuantity(cartItem, +value)"
+                />
+              </div>
             </div>
           </div>
-          <div class="card-body justify-between p-4">
-            <div class="flex justify-between">
-              <div class="leading-none">
-                <h2 class="font-medium">
-                  {{ cartItem.name }}
-                </h2>
-                <small class="text-slate-400">{{
-                  cartItem.category.name
-                }}</small>
-              </div>
-              <label
-                for="remove-item-modal"
-                class="btn btn-xs btn-link text-error p-0"
-                @click="itemToRemove = cartItem"
-              >
-                <XMarkIcon class="w-6" />
+        </template>
+        <template v-else-if="step === 1">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-medium">Select Delivery Address</p>
+            <label
+              for="address-modal"
+              class="btn btn-sm btn-outline btn-primary"
+            >
+              Add New Address
+            </label>
+          </div>
+          <div
+            v-for="address in addresses"
+            class="card rounded border bg-base-100 drop-shadow"
+          >
+            <div class="card-body capitalize p-4">
+              <label class="flex items-center cursor-pointer">
+                <input
+                  v-model="deliveryAddressId"
+                  type="radio"
+                  name="delivery-address-id"
+                  :value="address._id"
+                  class="radio radio-primary mr-4"
+                />
+                <div>
+                  <p class="flex items-center font-medium mb-2">
+                    {{ address.contact.name }}
+                    <span
+                      class="badge badge-sm badge-primary badge-outline ml-2"
+                      >{{ address.annotation }}</span
+                    >
+                  </p>
+                  <p class="text-sm text-slate-500">
+                    {{
+                      [
+                        address.line,
+                        address.area,
+                        address.city,
+                        address.state,
+                        address.country,
+                        address.zip,
+                      ].join(', ')
+                    }}
+                  </p>
+                  <p v-if="address.landmark" class="text-sm text-slate-500">
+                    Landmark: {{ address.landmark }}
+                  </p>
+                  <p class="mt-3">
+                    Contact: {{ address.contact.mobile.number }}
+                  </p>
+                </div>
               </label>
             </div>
-            <div class="card-actions items-center justify-between">
-              <div class="leading-none">
-                <p>
-                  <span class="font-medium">{{
-                    $n(cartItem.price, 'currency', 'en-US')
-                  }}</span>
-                  <small v-if="cartItem.mrp > cartItem.price">
-                    <del class="text-xs text-slate-500 ml-1">
-                      {{ $n(cartItem.mrp, 'currency', 'en-US') }}
-                    </del>
-                  </small>
-                </p>
-                <small
-                  v-if="cartItem.mrp > cartItem.price"
-                  class="text-xs text-success"
+          </div>
+        </template>
+        <template v-else-if="step === 2">
+          <p class="font-medium mb-3">Choose Payment Mode</p>
+          <div
+            class="card min-h-[300px] rounded border bg-base-100 drop-shadow"
+          >
+            <div class="flex">
+              <ul class="menu w-96 rounded-tl rounded-bl bg-base-100">
+                <li
+                  v-for="paymentMethod in storeStore.paymentMethods"
+                  :class="{
+                    active: selectedPaymentMethod.slug === paymentMethod.slug,
+                    disabled: paymentMethod.slug !== 'cod',
+                  }"
                 >
-                  {{ $n(cartItem.mrp - cartItem.price, 'currency', 'en-US') }}
-                  OFF
-                </small>
+                  <a
+                    :class="{
+                      active: selectedPaymentMethod.slug === paymentMethod.slug,
+                    }"
+                    >{{ paymentMethod.name }}</a
+                  >
+                </li>
+              </ul>
+              <div class="border-l p-4">
+                <p class="font-medium mb-4">Pay on Delivery (Cash / UPI)</p>
+                <p class="text-sm text-slate-400">
+                  You can pay via Cash or UPI enabled app at the time of
+                  delivery. Ask your delivery executive for these options.
+                </p>
               </div>
-              <Stepper
-                :key="index"
-                :value="cartItem.quantity"
-                @change="(value) => onChangeQuantity(cartItem, +value)"
-              />
             </div>
           </div>
-        </div>
+        </template>
       </div>
       <div class="divider divider-horizontal m-0" />
       <div class="w-2/6 p-3">
@@ -135,10 +231,16 @@
           <span>Total Amount</span>
           <span>{{ $n(cartStore.cart.bill.total, 'currency', 'en-US') }}</span>
         </p>
-        <button class="btn btn-primary w-full">Place Order</button>
+        <button
+          ref="actionButtonRef"
+          class="btn btn-primary w-full"
+          @click="processOrder"
+        >
+          {{ steps[step].action }}
+        </button>
       </div>
     </div>
-    <div v-else class="flex min-h-[calc(100vh-81px)] text-center">
+    <div v-else class="flex min-h-[calc(100vh-81px)] text-center py-4">
       <div class="m-auto">
         <img
           src="~/assets/images/cart.svg"
@@ -164,7 +266,7 @@
           </div>
         </div>
       </div>
-      <a href="" class="float-right">Need Help? Contact Us</a>
+      <a href="#" class="float-right">Need Help? Contact Us</a>
     </div>
     <input type="checkbox" id="remove-item-modal" class="modal-toggle" />
     <div class="modal">
@@ -204,27 +306,57 @@
         </div>
       </div>
     </div>
+    <AddressModal />
   </div>
 </template>
 
 <script setup>
-  import { useStoreStore } from '~~/stores/store';
-  import { ShieldCheckIcon } from '@heroicons/vue/24/solid';
-  import { useCartStore } from '@/stores/cart';
   import {
     LockClosedIcon,
     TagIcon,
     XMarkIcon,
   } from '@heroicons/vue/24/outline';
+  import { ShieldCheckIcon } from '@heroicons/vue/24/solid';
+  import { useStoreStore } from '@/store/store';
+  import { useCartStore } from '@/store/cart';
+  import { useUserStore } from '@/store/user';
+  import { useOrderStore } from '@/store/order';
+  import { useLoading } from 'vue-loading-overlay';
 
   definePageMeta({
     layout: false,
   });
 
+  const router = useRouter();
   const storeStore = useStoreStore();
   const cartStore = useCartStore();
+  const userStore = useUserStore();
+  const orderStore = useOrderStore();
+
+  const steps = [
+    {
+      name: 'Bag',
+      action: 'Continue',
+    },
+    {
+      name: 'Address',
+      action: 'Place Order',
+    },
+    {
+      name: 'Payment',
+      action: 'Complete',
+    },
+  ];
+
+  const actionButtonRef = ref(null);
+  const step = ref(0);
   const itemToRemove = ref(null);
   const removeItemModalCloseRef = ref(null);
+  const addresses = ref([]);
+  const deliveryAddressId = ref(null);
+  const selectedPaymentMethod = ref(
+    storeStore.paymentMethods.find((pm) => pm.slug === 'cod')
+  );
 
   const onChangeQuantity = (cartItem, quantity) => {
     cartStore.changeItemQuantity({
@@ -233,6 +365,7 @@
       quantity,
     });
   };
+
   const removeItem = () => {
     if (itemToRemove.value) {
       cartStore.removeItem(itemToRemove.value._id);
@@ -241,5 +374,68 @@
     }
 
     removeItemModalCloseRef.value?.click();
+  };
+
+  const processOrder = () => {
+    if (!userStore.isLoggedIn) {
+      const route = useRoute();
+
+      return navigateTo(`/auth?next=${route.fullPath}`);
+    }
+
+    switch (step.value) {
+      case 0:
+        ++step.value;
+        getAddresses();
+        break;
+      case 1:
+        ++step.value;
+        break;
+      case 2:
+        placeOrder();
+        break;
+    }
+  };
+
+  const getAddresses = async () => {
+    try {
+      const { data } = await userStore.getAddresses();
+
+      addresses.value = data;
+      deliveryAddressId.value = data[0]?._id;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const placeOrder = async () => {
+    const loader = useLoading().show();
+
+    actionButtonRef.value.disabled = true;
+
+    try {
+      await orderStore.placeOrder({
+        orderType: 'pickup',
+        billingAddressId: deliveryAddressId.value,
+        shippingAddressId: deliveryAddressId.value,
+        payments: [
+          {
+            paymentMethodId: selectedPaymentMethod.value._id,
+            amount: cartStore.cart.bill.total,
+            status: 'pending',
+          },
+        ],
+      });
+      await router.replace('/account/orders');
+      setTimeout(cartStore.destroy, 100);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loader.hide();
+
+      if (actionButtonRef.value?.disabled) {
+        actionButtonRef.value.disabled = false;
+      }
+    }
   };
 </script>

@@ -1,7 +1,11 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  /* const event = useRequestEvent();
+  if (process.server) {
+    const event = useRequestEvent();
 
-  if (!event.req.session.user) {
-    return navigateTo('/');
-  } */
+    if (to.path !== '/auth' && !event.req.session?.user?._id) {
+      return navigateTo(`/auth?next=${event.req.url}`);
+    } else if (to.path === '/auth' && event.req.session?.user?._id) {
+      return navigateTo('/');
+    }
+  }
 });

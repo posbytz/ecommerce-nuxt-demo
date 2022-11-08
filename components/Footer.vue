@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-  import { useStoreStore } from '~~/stores/store';
+  import { useStoreStore } from '@/store/store';
 
   const storeStore = useStoreStore();
 </script>

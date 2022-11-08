@@ -7,7 +7,7 @@
         <NuxtLink to="/" class="w-12 rounded">
           <img
             src="https://posbytz-qa.s3.amazonaws.com/stores/411/logo.png"
-            :alt="storeStore['brandName']"
+            :alt="storeStore.brandName"
           />
         </NuxtLink>
       </div>
@@ -99,10 +99,9 @@
                 <span>Categories</span>
               </li>
               <li v-for="category in searchResult.categories">
-                <a
-                  @click="onClickSearchResult(`/categories/${category.slug}`)"
-                  >{{ category.name }}</a
-                >
+                <a @click="onClickSearchResult(`/categories/${category.slug}`)">
+                  {{ category.name }}
+                </a>
               </li>
             </template>
             <template v-if="searchResult.items?.length">
@@ -110,7 +109,9 @@
                 <span>Items</span>
               </li>
               <li v-for="item in searchResult.items">
-                <NuxtLink>{{ item.name }}</NuxtLink>
+                <a @click="onClickSearchResult(`/items/${item.slug}`)">
+                  {{ item.name }}
+                </a>
               </li>
             </template>
           </ul>
@@ -132,33 +133,39 @@
         <label tabindex="0" class="btn btn-ghost btn-circle avatar">
           <UserCircleIcon class="w-6" />
         </label>
-        <!-- <ul
+        <ul
+          v-if="userStore.isLoggedIn"
           tabindex="0"
           class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
         >
-          <li>
-            <a class="justify-between">
-              Profile
-              <span class="badge">New</span>
-            </a>
+          <li @click="$blurActiveElement">
+            <NuxtLink to="/account/profile">Profile</NuxtLink>
           </li>
-          <li><a>Settings</a></li>
-          <li><a>Logout</a></li>
-        </ul> -->
+          <li @click="$blurActiveElement">
+            <NuxtLink to="/account/addresses">Addresses</NuxtLink>
+          </li>
+          <li @click="$blurActiveElement">
+            <NuxtLink to="/account/orders">Orders</NuxtLink>
+          </li>
+          <li @click="$blurActiveElement">
+            <a @click="userStore.logout">Logout</a>
+          </li>
+        </ul>
         <div
+          v-else
           tabindex="0"
           class="dropdown-content card card-compact w-64 mt-3 p-2 shadow bg-base-100"
         >
           <div class="card-body">
             <h3 class="font-medium">Welcome</h3>
             <p>To access account and manage orders</p>
-            <NuxtLink
-              to="/auth"
+            <a
+              href="/auth"
               class="btn btn-outline btn-primary"
               @click="$blurActiveElement"
             >
               Login / Signup
-            </NuxtLink>
+            </a>
           </div>
         </div>
       </div>
@@ -172,14 +179,16 @@
     ShoppingCartIcon,
   } from '@heroicons/vue/24/outline/index.js';
   import { UserCircleIcon } from '@heroicons/vue/24/outline';
-  import { useStoreStore } from '~~/stores/store';
+  import { useStoreStore } from '@/store/store';
   import { useDebounceFn } from '@vueuse/core';
-  import { useCartStore } from '~~/stores/cart';
+  import { useCartStore } from '@/store/cart';
+  import { useUserStore } from '@/store/user';
 
   const router = useRouter();
   const gridColsLength = 4;
   const storeStore = useStoreStore();
   const cartStore = useCartStore();
+  const userStore = useUserStore();
   const { data: categories } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie', 'host']),
     transform: (response) => {
@@ -188,6 +197,7 @@
   });
   const searchInput = ref(null);
   const searchResult = ref({});
+
   const search = useDebounceFn(async (event) => {
     const q = event.target.value;
 
@@ -202,6 +212,7 @@
       searchResult.value = {};
     }
   }, 500);
+
   const onClickSearchResult = (url) => {
     searchInput.value.value = '';
     searchResult.value = {};

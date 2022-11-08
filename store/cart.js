@@ -68,6 +68,15 @@ export const useCartStore = defineStore('cart', {
       this.cart = null;
       loader.hide();
     },
+    async destroy() {
+      this.$reset();
+      await $fetch('/api/session', {
+        method: 'DELETE',
+        headers: useRequestHeaders(['cookie']),
+        initialCache: false,
+        params: { key: 'cart' },
+      });
+    },
   },
   getters: {
     filterCartItem: (state) => {

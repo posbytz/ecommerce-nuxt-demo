@@ -4,7 +4,7 @@
       <div class="card w-96 border m-6 shadow-2xl">
         <Form
           v-if="!showOtpVerification"
-          ref="form"
+          ref="authForm"
           as="div"
           class="card-body"
           :validation-schema="validationSchema"
@@ -31,11 +31,10 @@
               <Field
                 v-model="mobile.number"
                 name="mobile"
-                type="number"
+                type="text"
                 placeholder="Mobile"
                 class="input input-bordered w-full"
                 autofocus
-                validate-on-input
               />
             </label>
             <ErrorMessage name="mobile" class="text-xs text-error p-1" />
@@ -44,22 +43,26 @@
             <label class="label">
               <span class="label-text">Password</span>
             </label>
-            <Field
-              v-model="password"
-              v-slot="{ field }"
-              name="password"
-              validate-on-input
-            >
-              <input
-                v-bind="field"
-                ref="passwordInputRef"
-                type="password"
-                :placeholder="
-                  accountExists ? 'Enter your password' : 'Set a password'
-                "
-                class="input input-bordered"
-              />
-            </Field>
+            <label class="input-group">
+              <Field v-model="password" v-slot="{ field }" name="password">
+                <input
+                  v-bind="field"
+                  ref="passwordInputRef"
+                  type="password"
+                  :placeholder="
+                    accountExists ? 'Enter your password' : 'Set a password'
+                  "
+                  class="input input-bordered w-full"
+                />
+              </Field>
+              <span>
+                <label class="swap">
+                  <input type="checkbox" @change="$togglePasswordVisibility" />
+                  <EyeIcon class="swap-on w-6" />
+                  <EyeSlashIcon class="swap-off w-6" />
+                </label>
+              </span>
+            </label>
             <ErrorMessage
               name="password"
               class="text-xs text-error px-1 pt-1"
@@ -95,13 +98,7 @@
             </div>
           </template>
         </Form>
-        <Form
-          v-else
-          ref="otpForm"
-          as="div"
-          class="card-body"
-          validation-schema=""
-        >
+        <Form v-else ref="otpForm" as="div" class="card-body">
           <div>
             <h3 class="text-xl font-medium">Verify with OTP</h3>
             <p class="text-sm text-slate-400">Sent to {{ mobile.number }}</p>
@@ -120,6 +117,8 @@
                 @keyup="onOtpKeyup(i)"
               />
             </div>
+            <Field as="div" name="otp" />
+            <ErrorMessage name="otp" class="text-xs text-error px-1 pt-1" />
             <label class="label">
               <a href="#" class="label-text-alt link link-primary link-hover"
                 >Resend OTP</a
@@ -140,11 +139,18 @@
   import { Form, Field, ErrorMessage } from 'vee-validate';
   import * as yup from 'yup';
   import 'yup-phone';
-  import { useUserStore } from '~~/stores/user';
+  import { useUserStore } from '@/store/user';
+  import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid';
 
+  definePageMeta({
+    middleware: 'auth',
+  });
+
+  const route = useRoute();
   const userStore = useUserStore();
 
-  const form = ref(null);
+  const authForm = ref(null);
+  const otpForm = ref(null);
   const mobile = ref({
     code: '+91',
     number: 9962794005,
@@ -152,7 +158,7 @@
   const accountExists = ref(false);
   const showPassword = ref(false);
   const passwordInputRef = ref(null);
-  const password = ref('');
+  const password = ref('qwert@123');
   const showOtpVerification = ref(false);
 
   const validationSchema = computed(() =>
@@ -166,7 +172,7 @@
   );
 
   const validateAccount = async () => {
-    if ((await form.value.validate()).valid) {
+    if ((await authForm.value.validate()).valid) {
       try {
         await userStore.validateAccount({ mobile: mobile.value });
         accountExists.value = true;
@@ -180,12 +186,17 @@
   };
 
   const authorize = async () => {
-    if ((await form.value.validate()).valid) {
+    if ((await authForm.value.validate()).valid) {
       try {
-        await userStore.authorize(accountExists.value ? 'signin' : 'signup', {
-          mobile: mobile.value,
-          password: password.value,
-        });
+        await userStore.authorize(
+          accountExists.value ? 'signin' : 'signup',
+          {
+            mobile: mobile.value,
+            password: password.value,
+          },
+          authForm.value
+        );
+        navigateTo(route.query.next || '/', { replace: true });
       } catch (err) {
         if (accountExists.value && err.response.status === 403) {
           showOtpVerification.value = true;
@@ -198,6 +209,8 @@
   };
 
   const onOtpKeyup = (i) => {
+    otpForm.value.resetForm();
+
     const allInputs = document.querySelectorAll('.otp');
     const nextInput = allInputs[i + 1];
     const previousInput = allInputs[i - 1];
@@ -213,7 +226,13 @@
 
       if (otp.length === 6) {
         allInputs[i].blur();
-        userStore.verifyOtp(otp);
+        userStore
+          .verifyOtp({ otp: +otp, source: 'mobile' }, otpForm.value)
+          .then(() => navigateTo(route.query.next || '/', { replace: true }))
+          .catch(() => {
+            allInputs.forEach((i) => (i.value = ''));
+            allInputs[0].focus();
+          });
       } else if (nextInput) {
         nextInput.focus();
       }

@@ -3,7 +3,7 @@
     <div class="divider" />
     <div class="btn-group justify-center">
       <button
-        class="btn btn-sm"
+        class="btn btn-sm btn-outline btn-primary"
         :disabled="props.options.currentPage === 1"
         @click="onClickBtn(props.options.currentPage - 1)"
       >
@@ -13,10 +13,10 @@
         <button
           v-for="i in [
             ...Array(
-              props.options.lastPage < 10 ? props.options.lastPage : 10,
+              props.options.lastPage < 10 ? props.options.lastPage : 10
             ).keys(),
           ]"
-          class="btn btn-sm"
+          class="btn btn-sm btn-outline btn-primary"
           :class="{
             'btn-active': props.options.currentPage === i + 1,
           }"
@@ -26,17 +26,17 @@
         </button>
       </template>
       <template v-else>
-        <button class="btn btn-sm">1</button>
-        <button class="btn btn-sm" disabled>...</button>
+        <button class="btn btn-sm btn-outline btn-primary">1</button>
+        <button class="btn btn-sm btn-outline btn-primary" disabled>...</button>
         <button
           v-for="i in [
             ...Array(
               props.options.currentPage + 4 > props.options.lastPage
                 ? 5 + props.options.lastPage - props.options.currentPage
-                : 9,
+                : 9
             ).keys(),
           ]"
-          class="btn btn-sm"
+          class="btn btn-sm btn-outline btn-primary"
           :class="{
             'btn-active':
               props.options.currentPage === props.options.currentPage + i - 4,
@@ -46,7 +46,7 @@
         </button>
       </template>
       <button
-        class="btn btn-sm"
+        class="btn btn-sm btn-outline btn-primary"
         :disabled="props.options.currentPage === props.options.lastPage"
         @click="onClickBtn(props.options.currentPage + 1)"
       >

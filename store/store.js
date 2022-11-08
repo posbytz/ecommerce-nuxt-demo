@@ -6,7 +6,7 @@ export const useStoreStore = defineStore('store', {
     store: null,
   }),
   actions: {
-    init() {
+    async init() {
       const event = useRequestEvent();
 
       return $fetch('/api/v1/store', {
@@ -27,5 +27,9 @@ export const useStoreStore = defineStore('store', {
     brandName: (state) =>
       state.store?.business?.brandName || state.store?.business?.name,
     settings: (state) => state.store?.settings,
+    paymentMethods: (state) =>
+      state.store?.paymentMethods
+        .filter((pm) => pm.active)
+        .sort((a, b) => a.position - b.position),
   },
 });

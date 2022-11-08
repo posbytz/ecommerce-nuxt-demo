@@ -177,7 +177,7 @@
     HeartIcon,
     ArrowRightIcon,
   } from '@heroicons/vue/24/outline/index.js';
-  import { useCartStore } from '@/stores/cart';
+  import { useCartStore } from '@/store/cart';
 
   const cartStore = useCartStore();
   const route = useRoute();

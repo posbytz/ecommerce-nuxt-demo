@@ -48,6 +48,19 @@ export const useUserStore = defineStore('user', {
         this.$patch({ user: response.data });
       });
     },
+    forgotPassword(data, validator) {
+      return $fetch('/api/v1/auth/password/forgot', {
+        method: 'POST',
+        headers: useRequestHeaders(['cookie', 'host']),
+        params: { sessionStoreKey: 'user' },
+        body: data,
+        onResponseError: ({ response }) => {
+          const nuxtApp = useNuxtApp();
+
+          nuxtApp?.$onResponseError(response, validator);
+        },
+      });
+    },
     async logout() {
       await $fetch('/api/logout');
       window.location.reload();

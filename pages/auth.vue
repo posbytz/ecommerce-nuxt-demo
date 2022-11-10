@@ -68,9 +68,12 @@
               class="text-xs text-error px-1 pt-1"
             />
             <label v-if="accountExists" class="label pb-0">
-              <a href="#" class="label-text-alt link link-primary link-hover"
-                >Forgot password?</a
+              <span
+                class="label-text-alt link link-primary link-hover"
+                @click="forgotPassword"
               >
+                Forgot password?
+              </span>
             </label>
             <div class="form-control mt-6">
               <button class="btn btn-primary" @click="authorize">
@@ -147,6 +150,7 @@
   });
 
   const route = useRoute();
+  const router = useRouter();
   const userStore = useUserStore();
 
   const authForm = ref(null);
@@ -196,16 +200,25 @@
           },
           authForm.value
         );
-        navigateTo(route.query.next || '/', { replace: true });
+
+        if (accountExists.value) {
+          navigateTo(route.query.next || '/', { replace: true });
+        } else {
+          showOtpForm();
+        }
       } catch (err) {
         if (accountExists.value && err.response.status === 403) {
-          showOtpVerification.value = true;
-          requestAnimationFrame(() => {
-            document.querySelector('.otp').focus();
-          });
+          showOtpForm();
         }
       }
     }
+  };
+
+  const showOtpForm = () => {
+    showOtpVerification.value = true;
+    requestAnimationFrame(() => {
+      document.querySelector('.otp').focus();
+    });
   };
 
   const onOtpKeyup = (i) => {
@@ -239,6 +252,14 @@
     } else if (previousInput) {
       previousInput.value = '';
       previousInput.focus();
+    }
+  };
+
+  const forgotPassword = async () => {
+    if ((await authForm.value.validateField('mobile')).valid) {
+      await userStore.forgotPassword({ mobile: mobile.value });
+      await router.push({ query: { next: '/account/profile?t=cp' } });
+      showOtpForm();
     }
   };
 </script>

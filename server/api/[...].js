@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     return response;
   } catch (err) {
     if (params.sessionStoreKey && err.response.status === 403) {
-      event.req.session[params.sessionStoreKey] = err.data;
+      event.req.session[params.sessionStoreKey] = err.data.data;
     }
 
     throw createError({

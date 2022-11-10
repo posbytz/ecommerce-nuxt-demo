@@ -91,7 +91,7 @@
                 />
                 <span>
                   <CheckCircleIcon
-                    v-if="userStore.user.email.verified"
+                    v-if="userStore.user.email?.verified"
                     class="w-6 text-success"
                   />
                   <ExclamationCircleIcon v-else class="w-6 text-error" />
@@ -158,7 +158,7 @@
           as="div"
           :validation-schema="passwordFormValidationSchema"
         >
-          <div class="form-control">
+          <div v-if="route.query.t !== 'cp'" class="form-control">
             <label class="label">
               <span class="label-text">Current Password *</span>
             </label>
@@ -266,7 +266,17 @@
     middleware: 'auth',
   });
 
+  const route = useRoute();
+  const router = useRouter();
   const userStore = useUserStore();
+
+  if (process.client) {
+    if (route.query.t === 'cp') {
+      requestAnimationFrame(() => {
+        document.querySelector('label[for="password-modal"]')?.click();
+      });
+    }
+  }
 
   const profileForm = ref(null);
   const name = ref(userStore.user?.name);
@@ -291,16 +301,21 @@
     email: yup.string().required().email(),
     mobile: yup.string().phone().required(),
   });
-  const passwordFormValidationSchema = yup.object({
-    currentPassword: yup.string().min(6).max(24).required(),
-    newPassword: yup.string().min(6).max(24).required(),
-    passwordConfirmation: yup
-      .string()
-      .min(6)
-      .max(24)
-      .required()
-      .oneOf([yup.ref('newPassword')], 'Passwords do not match'),
-  });
+  const passwordFormValidationSchema = computed(() =>
+    yup.object({
+      currentPassword:
+        route.query.t !== 'cp'
+          ? yup.string().min(6).max(24).required()
+          : undefined,
+      newPassword: yup.string().min(6).max(24).required(),
+      passwordConfirmation: yup
+        .string()
+        .min(6)
+        .max(24)
+        .required()
+        .oneOf([yup.ref('newPassword')], 'Passwords do not match'),
+    })
+  );
 
   const saveProfile = async () => {
     if ((await profileForm.value.validate()).valid) {
@@ -319,13 +334,21 @@
     if ((await passwordForm.value.validate()).valid) {
       await userStore.changePassword(
         {
-          currentPassword: currentPassword.value,
+          currentPassword:
+            route.query.t !== 'cp' ? currentPassword.value : undefined,
           newPassword: newPassword.value,
           passwordConfirmation: passwordConfirmation.value,
         },
         passwordForm.value
       );
       passwordModalCloseBtn.value?.click();
+
+      if (route.query.t === 'cp') {
+        const query = { ...route.query };
+
+        delete query.t;
+        await router.push({ query });
+      }
     }
   };
 </script>

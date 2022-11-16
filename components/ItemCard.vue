@@ -10,8 +10,9 @@
     >
       <figure class="h-56">
         <img
-          src="https://contents.mediadecathlon.com/p1578090/b2ca5106642429bacfe7811b96afd158/p1578090.jpg?format=auto&quality=70&f=300x0"
-          alt="Shoes"
+          :src="item.images[0]"
+          :alt="item.name"
+          class="h-full object-cover"
         />
       </figure>
       <div class="card-body">

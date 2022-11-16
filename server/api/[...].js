@@ -36,6 +36,8 @@ export default defineEventHandler(async (event) => {
 
     return response;
   } catch (err) {
+    console.error('api', err, err.data);
+
     if (params.sessionStoreKey && err.response.status === 403) {
       event.node.req.session[params.sessionStoreKey] = err.data.data;
     }

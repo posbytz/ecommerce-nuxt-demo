@@ -5,10 +5,7 @@
     <div class="flex-none">
       <div class="avatar mr-2">
         <NuxtLink to="/" class="w-12 rounded">
-          <img
-            src="https://posbytz-qa.s3.amazonaws.com/stores/411/logo.png"
-            :alt="storeStore.brandName"
-          />
+          <img :src="storeStore.logo" :alt="storeStore.brandName" />
         </NuxtLink>
       </div>
       <div class="tabs">

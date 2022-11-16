@@ -242,11 +242,7 @@
     </div>
     <div v-else class="flex min-h-[calc(100vh-81px)] text-center py-4">
       <div class="m-auto">
-        <img
-          src="~/assets/images/cart.svg"
-          alt="Cart"
-          class="m-auto w-64 mb-4"
-        />
+        <img src="/images/cart.svg" alt="Cart" class="m-auto w-64 mb-4" />
         <h1 class="text-2xl font-medium mt-2">Hey, it feels so light!</h1>
         <p class="text-slate-400 mb-4">
           There is nothing in your cart. Let's add some items

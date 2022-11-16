@@ -26,14 +26,11 @@
   >
     <div class="items-center grid-flow-col">
       <div class="avatar w-10 rounded mr-2">
-        <img
-          src="https://posbytz-qa.s3.amazonaws.com/stores/411/logo.png"
-          :alt="storeStore['brandName']"
-        />
+        <img :src="storeStore.logo" :alt="storeStore.brandName" />
       </div>
       <div>
         <p class="capitalize">
-          {{ storeStore['brandName'] }}
+          {{ storeStore.brandName }}
         </p>
         <p>
           Copyright &copy; {{ new Date().getFullYear() }} - All right reserved

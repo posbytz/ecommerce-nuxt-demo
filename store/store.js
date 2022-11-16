@@ -26,6 +26,10 @@ export const useStoreStore = defineStore('store', {
   getters: {
     brandName: (state) =>
       state.store?.business?.brandName || state.store?.business?.name,
+    logo: (state) =>
+      state.store?.settings?.store?.general?.logo_img_url ||
+      state.store?.business?.logoUrl ||
+      '/images/logo.svg',
     settings: (state) => state.store?.settings,
     paymentMethods: (state) =>
       state.store?.paymentMethods

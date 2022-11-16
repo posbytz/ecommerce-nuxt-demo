@@ -177,8 +177,8 @@
   import {
     MagnifyingGlassIcon,
     ShoppingCartIcon,
-  } from '@heroicons/vue/24/outline/index.js';
-  import { UserCircleIcon } from '@heroicons/vue/24/outline';
+    UserCircleIcon,
+  } from '@heroicons/vue/24/outline';
   import { useStoreStore } from '@/store/store';
   import { useDebounceFn } from '@vueuse/core';
   import { useCartStore } from '@/store/cart';

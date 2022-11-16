@@ -321,7 +321,6 @@
   import { useCartStore } from '@/store/cart';
   import { useUserStore } from '@/store/user';
   import { useOrderStore } from '@/store/order';
-  import { useLoading } from 'vue-loading-overlay';
 
   definePageMeta({
     layout: false,
@@ -355,7 +354,7 @@
   const addresses = ref([]);
   const deliveryAddressId = ref(null);
   const selectedPaymentMethod = ref(
-    storeStore.paymentMethods.find((pm) => pm.slug === 'cod')
+    storeStore.paymentMethods?.find((pm) => pm.slug === 'cod')
   );
 
   const onChangeQuantity = (cartItem, quantity) => {
@@ -376,25 +375,31 @@
     removeItemModalCloseRef.value?.click();
   };
 
-  const processOrder = () => {
+  const processOrder = async (e) => {
     if (!userStore.isLoggedIn) {
       const route = useRoute();
 
       return navigateTo(`/auth?next=${route.fullPath}`);
     }
 
+    e.target.disabled = true;
+    e.target.classList.add('loading');
+
     switch (step.value) {
       case 0:
         ++step.value;
-        getAddresses();
+        await getAddresses();
         break;
       case 1:
         ++step.value;
         break;
       case 2:
-        placeOrder();
+        await placeOrder();
         break;
     }
+
+    e.target.disabled = false;
+    e.target.classList.remove('loading');
   };
 
   const getAddresses = async () => {
@@ -409,8 +414,6 @@
   };
 
   const placeOrder = async () => {
-    const loader = useLoading().show();
-
     actionButtonRef.value.disabled = true;
 
     try {
@@ -431,8 +434,6 @@
     } catch (err) {
       console.error(err);
     } finally {
-      loader.hide();
-
       if (actionButtonRef.value?.disabled) {
         actionButtonRef.value.disabled = false;
       }

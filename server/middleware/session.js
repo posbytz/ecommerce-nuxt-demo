@@ -2,23 +2,25 @@ import { createClient, createCluster } from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 
+const config = useRuntimeConfig();
+
 const RedisStore = connectRedis(session);
 const redisConnection =
-  process.env.REDIS_CONNECTION_TYPE === 'cluster'
+  config.redisConnectionType === 'cluster'
     ? createCluster({
         rootNodes: [
           {
-            url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+            url: `redis://${config.redisHost}:${config.redisPort}`,
           },
         ],
       })
     : createClient({
         legacyMode: true,
         socket: {
-          host: process.env.REDIS_HOST,
-          port: process.env.REDIS_PORT,
+          host: config.redisHost,
+          port: config.redisPort,
         },
-        database: process.env.REDIS_DB,
+        database: config.redisDb,
       });
 
 redisConnection.connect().catch(console.error);
@@ -27,14 +29,14 @@ export default fromNodeMiddleware((req, res, next) => {
   if (!req.url.startsWith('/__nuxt_error')) {
     return session({
       store: new RedisStore({ client: redisConnection }),
-      secret: process.env.SESSION_SECRET,
-      proxy: process.env.NODE_ENV !== 'development',
+      secret: config.sessionSecret,
+      proxy: config.nodeEnv !== 'development',
       resave: false,
       saveUninitialized: true,
       cookie: {
-        sameSite: process.env.NODE_ENV !== 'development' ? 'none' : false,
+        sameSite: config.nodeEnv !== 'development' ? 'none' : false,
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        secure: process.env.NODE_ENV !== 'development',
+        secure: config.nodeEnv !== 'development',
       },
     })(req, res, next);
   }

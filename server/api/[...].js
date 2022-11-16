@@ -1,21 +1,22 @@
 export default defineEventHandler(async (event) => {
-  const method = useMethod(event);
+  const config = useRuntimeConfig();
+  const method = getMethod(event);
   const headers = {
-    'X-Api-Authorization': event.req.session.apiAccessToken?.access_token,
-    Authorization: event.req.session.user?.accessToken
-      ? `${event.req.session.user.tokenType} ${event.req.session.user.accessToken}`
+    'X-Api-Authorization': event.node.req.session.apiAccessToken?.access_token,
+    Authorization: event.node.req.session.user?.accessToken
+      ? `${event.node.req.session.user.tokenType} ${event.node.req.session.user.accessToken}`
       : undefined,
   };
-  const params = useQuery(event);
-  const body = method === 'GET' ? undefined : await useBody(event);
+  const params = getQuery(event);
+  const body = method === 'GET' ? undefined : await readBody(event);
 
-  if (process.env.NODE_ENV === 'development') {
-    headers['x-authenticated-userid'] = 'M0001171';
+  if (config.nodeEnv === 'development') {
+    headers['x-authenticated-userid'] = config.ecommerceStoreCode;
   }
 
   try {
-    const response = await $fetch(event.req.url.replace(/^\/api/, ''), {
-      baseURL: process.env.ECOMMERCE_API_DOMAIN,
+    const response = await $fetch(event.node.req.url.replace(/^\/api/, ''), {
+      baseURL: config.ecommerceApiDomain,
       method,
       headers,
       params,
@@ -23,17 +24,20 @@ export default defineEventHandler(async (event) => {
     });
 
     if (params.sessionStoreKey) {
-      if (typeof event.req.session[params.sessionStoreKey] === 'object') {
-        Object.assign(event.req.session[params.sessionStoreKey], response.data);
+      if (typeof event.node.req.session[params.sessionStoreKey] === 'object') {
+        Object.assign(
+          event.node.req.session[params.sessionStoreKey],
+          response.data
+        );
       } else {
-        event.req.session[params.sessionStoreKey] = response.data;
+        event.node.req.session[params.sessionStoreKey] = response.data;
       }
     }
 
     return response;
   } catch (err) {
     if (params.sessionStoreKey && err.response.status === 403) {
-      event.req.session[params.sessionStoreKey] = err.data.data;
+      event.node.req.session[params.sessionStoreKey] = err.data.data;
     }
 
     throw createError({

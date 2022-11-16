@@ -189,7 +189,6 @@
   const { data: category } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie']),
     params: { slug: [route.params.slug] },
-    initialCache: false,
     transform(response) {
       return response.data.results[0];
     },
@@ -199,7 +198,6 @@
     '/api/v1/items',
     {
       headers: useRequestHeaders(['cookie']),
-      initialCache: false,
       onRequest({ request, options }) {
         options.params = {
           categoryId: category.value._id,

@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  delete event.req.session.user;
+  delete event.node.req.session.user;
 
   return { statusCode: 200 };
 });

@@ -157,12 +157,12 @@
   const otpForm = ref(null);
   const mobile = ref({
     code: '+91',
-    number: 9962794005,
+    number: null,
   });
   const accountExists = ref(false);
   const showPassword = ref(false);
   const passwordInputRef = ref(null);
-  const password = ref('qwert@123');
+  const password = ref('');
   const showOtpVerification = ref(false);
 
   const validationSchema = computed(() =>

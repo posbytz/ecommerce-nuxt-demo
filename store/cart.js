@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useLoading } from 'vue-loading-overlay';
 
 export const useCartStore = defineStore('cart', {
   id: 'cart-store',
@@ -13,11 +12,9 @@ export const useCartStore = defineStore('cart', {
       this.cart = req.session.cart || null;
     },
     async changeItemQuantity(data) {
-      const loader = useLoading().show();
       const response = await $fetch('/api/v1/carts/item', {
         method: 'POST',
         headers: useRequestHeaders(['cookie']),
-        initialCache: false,
         params: {
           cartId: this.cart?._id,
           sessionStoreKey: 'cart',
@@ -29,14 +26,11 @@ export const useCartStore = defineStore('cart', {
       });
 
       this.$patch({ cart: response.data });
-      loader.hide();
     },
     async removeItem(id) {
-      const loader = useLoading().show();
       const response = await $fetch(`/api/v1/carts/items/${id}`, {
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
-        initialCache: false,
         params: {
           cartId: this.cart?._id,
           sessionStoreKey: 'cart',
@@ -47,15 +41,11 @@ export const useCartStore = defineStore('cart', {
       });
 
       this.$patch({ cart: response.data });
-      loader.hide();
     },
     async delete() {
-      const loader = useLoading().show();
-
       await $fetch('/api/v1/carts', {
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
-        initialCache: false,
         params: {
           cartId: this.cart?._id,
           sessionStoreKey: 'cart',
@@ -66,14 +56,12 @@ export const useCartStore = defineStore('cart', {
       });
 
       this.cart = null;
-      loader.hide();
     },
     async destroy() {
       this.$reset();
       await $fetch('/api/session', {
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
-        initialCache: false,
         params: { key: 'cart' },
       });
     },

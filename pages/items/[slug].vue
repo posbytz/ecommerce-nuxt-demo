@@ -185,7 +185,6 @@
   const { data: item } = await useFetch('/api/v1/items', {
     headers: useRequestHeaders(['cookie', 'host']),
     params: { slug: [route.params.slug] },
-    initialCache: false,
     transform(response) {
       return response.data.results[0];
     },
@@ -264,13 +263,18 @@
   const onChangeAttribute = (e) => {
     selectedAttributes.value[e.target.name] = e.target.value;
   };
-  const addToCart = () => {
-    cartStore.changeItemQuantity({
+
+  const addToCart = async (event) => {
+    event.target.disabled = true;
+    event.target.classList.add('loading');
+    await cartStore.changeItemQuantity({
       id: subItem.value?._id || item.value._id,
       locationId:
         subItem.value?.inventory.locationId || item.value.inventory.locationId,
       quantity: 1,
     });
+    event.target.disabled = false;
+    event.target.classList.remove('loading');
   };
 </script>
 

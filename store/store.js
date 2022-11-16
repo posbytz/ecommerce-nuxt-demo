@@ -11,14 +11,14 @@ export const useStoreStore = defineStore('store', {
 
       return $fetch('/api/v1/store', {
         headers: useRequestHeaders(['cookie', 'host']),
-        params: { domain: event.req.headers.host },
+        params: { domain: event.node.req.headers.host },
       })
         .then((response) => {
-          event.req.session.store = response.data;
+          event.node.req.session.store = response.data;
           this.$patch({ store: response.data });
         })
         .catch(() => {
-          delete event.req.session.store;
+          delete event.node.req.session.store;
           this.$reset();
         });
     },

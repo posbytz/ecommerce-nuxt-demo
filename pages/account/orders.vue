@@ -63,7 +63,6 @@
     '/api/v1/orders',
     {
       headers: useRequestHeaders(['cookie']),
-      initialCache: false,
       onRequest({ request, options }) {
         options.params = { ...route.query };
       },

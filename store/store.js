@@ -30,6 +30,10 @@ export const useStoreStore = defineStore('store', {
       state.store?.settings?.store?.general?.logo_img_url ||
       state.store?.business?.logoUrl ||
       '/images/logo.svg',
+    favicon: (state) =>
+      state.store?.settings?.store?.general?.favicon ||
+      state.store?.business?.logoUrl ||
+      '/images/favicon.ico',
     settings: (state) => state.store?.settings,
     paymentMethods: (state) =>
       state.store?.paymentMethods

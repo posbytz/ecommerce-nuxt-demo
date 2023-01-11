@@ -6,15 +6,36 @@
         :id="`slide-${i + 1}`"
         class="carousel-item w-full"
       >
-        <img :src="banner.img_url" :alt="banner.name" class="w-full" />
+        <img :src="banner.file_path" :alt="banner.name" class="w-full" />
       </div>
     </div>
     <div class="p-5">
-      <!-- <template v-if="brands?.length">
+      <template v-if="brands?.length">
         <div class="divider">
           <h3 class="text-3xl">Explore Crush-worthy Brands</h3>
         </div>
-      </template> -->
+        <div class="grid grid-cols-5 my-10">
+          <NuxtLink v-for="brand in brands" :to="`/brand/${brand.slug}`">
+            <div
+              class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl"
+            >
+              <figure class="h-48">
+                <img
+                  :src="brand.logoUrl"
+                  :alt="brand.name"
+                  class="w-full object-cover"
+                />
+              </figure>
+              <div class="card-body">
+                <p class="text-lg font-medium text-center leading-none">
+                  {{ brand.name }}
+                </p>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </template>
+
       <template v-if="categories?.length">
         <div class="divider mb-8">
           <h3 class="text-3xl">Shop by Category</h3>
@@ -53,8 +74,17 @@
 
   const storeStore = useStoreStore();
   let bannerScrollTimer = null;
+
   const { data: categories } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie', 'host']),
+    transform: (response) => {
+      return response.data.results;
+    },
+  });
+
+  const { data: brands } = await useFetch('/api/v1/brands', {
+    headers: useRequestHeaders(['cookie', 'host']),
+    query: { page: 1, limit: 20 },
     transform: (response) => {
       return response.data.results;
     },

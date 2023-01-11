@@ -43,7 +43,7 @@ export const useCartStore = defineStore('cart', {
       this.$patch({ cart: response.data });
     },
     async delete() {
-      await $fetch('/api/v1/carts', {
+     await $fetch('/api/v1/carts', {
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
         params: {
@@ -55,6 +55,11 @@ export const useCartStore = defineStore('cart', {
         },
       });
 
+      await $fetch('/api/session', {
+        method: 'PUT',
+        headers: useRequestHeaders(['cookie']),
+        params: { key: 'cart' },
+      });
       this.cart = null;
     },
     async destroy() {
@@ -65,6 +70,18 @@ export const useCartStore = defineStore('cart', {
         params: { key: 'cart' },
       });
     },
+    async reorder(orderId, orderQuery) {
+      let response = await $fetch(`/api/v1/orders/${orderId}/reorder`, {
+        method: 'GET',
+        headers: useRequestHeaders(['cookie']),
+        params: {
+          cartId: this.cart?._id,
+          sessionStoreKey: 'cart',
+        },
+        query: orderQuery,
+      })
+      this.$patch({ cart: response.data });
+    }
   },
   getters: {
     filterCartItem: (state) => {

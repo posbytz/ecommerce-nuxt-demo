@@ -24,6 +24,7 @@
     "@heroicons/vue": "^2.0.13",
     "@pinia/nuxt": "^0.4.6",
     "@vueuse/nuxt": "9.6.0",
+    "aws-sdk": "^2.1269.0",
     "connect-redis": "^6.1.3",
     "express-session": "^1.17.3",
     "patch-package": "^6.5.0",

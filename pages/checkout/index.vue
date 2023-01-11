@@ -4,10 +4,7 @@
       <div class="flex-none">
         <div class="avatar mr-2">
           <NuxtLink to="/" class="w-12 rounded">
-            <img
-              src="https://posbytz-qa.s3.amazonaws.com/stores/411/logo.png"
-              :alt="storeStore['brandName']"
-            />
+            <img :src="storeStore.logo" :alt="storeStore['brandName']" />
           </NuxtLink>
         </div>
       </div>
@@ -53,7 +50,7 @@
           >
             <div class="avatar">
               <div class="w-32">
-                <img src="https://placeimg.com/120/120/arch" alt="Movie" />
+                <img :src="cartItem?.image" :alt="`Product-${index+1}`" />
               </div>
             </div>
             <div class="card-body justify-between p-4">
@@ -128,7 +125,7 @@
                 />
                 <div>
                   <p class="flex items-center font-medium mb-2">
-                    {{ address.contact.name }}
+                    {{ address.contact?.name }}
                     <span
                       class="badge badge-sm badge-primary badge-outline ml-2"
                       >{{ address.annotation }}</span
@@ -150,7 +147,7 @@
                     Landmark: {{ address.landmark }}
                   </p>
                   <p class="mt-3">
-                    Contact: {{ address.contact.mobile.number }}
+                    Contact: {{ address.contact?.mobile.number }}
                   </p>
                 </div>
               </label>
@@ -194,7 +191,7 @@
       <div class="w-2/6 p-3">
         <ul class="menu border mb-4">
           <li>
-            <a><TagIcon class="w-5" />Apply Coupon</a>
+            <a> <TagIcon class="w-5" />Apply Coupon </a>
           </li>
         </ul>
         <p class="font-medium mb-2">
@@ -367,7 +364,6 @@
     } else {
       cartStore.delete();
     }
-
     removeItemModalCloseRef.value?.click();
   };
 
@@ -401,7 +397,6 @@
   const getAddresses = async () => {
     try {
       const { data } = await userStore.getAddresses();
-
       addresses.value = data;
       deliveryAddressId.value = data[0]?._id;
     } catch (err) {

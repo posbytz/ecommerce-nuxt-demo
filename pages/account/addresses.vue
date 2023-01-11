@@ -25,7 +25,7 @@
           <div class="card-body capitalize p-4">
             <div class="flex items-center font-medium mb-2">
               <p>
-                {{ address.contact.name }}
+                {{ address.contact?.name }}
                 <span class="badge badge-sm badge-primary badge-outline ml-2">{{
                   address.annotation
                 }}</span>
@@ -61,7 +61,7 @@
             <p v-if="address.landmark" class="text-sm text-slate-500">
               Landmark: {{ address.landmark }}
             </p>
-            <p class="mt-3">Contact: {{ address.contact.mobile.number }}</p>
+            <p class="mt-3">Contact: {{ address.contact?.mobile.number }}</p>
           </div>
         </div>
       </div>

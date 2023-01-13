@@ -13,12 +13,10 @@ export default defineEventHandler(async (event) => {
     });
 
     if (method == 'POST') {
-
+        
         const { image, imageName, imageType, reviewId } = body;
-
         let buffer = new Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), 'base64')
         let file_name = imageName.replace(/\s/g, '');
-
         let photoBucket = new AWS.S3({})
 
         async function upload() {
@@ -28,14 +26,12 @@ export default defineEventHandler(async (event) => {
                 Key: `reviews/${reviewId}/${file_name}`,
                 ContentType: imageType
             }
-
             let data;
 
             try {
                 data = await promiseUpload(params);
             } catch (err) {
                 console.error(err);
-
                 return "";
             }
 
@@ -55,12 +51,5 @@ export default defineEventHandler(async (event) => {
         }
         
         return await upload();
-
     }
 })
-
-
-
-
-
-

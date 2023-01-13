@@ -35,7 +35,6 @@
           </NuxtLink>
         </div>
       </template>
-
       <template v-if="categories?.length">
         <div class="divider mb-8">
           <h3 class="text-3xl">Shop by Category</h3>

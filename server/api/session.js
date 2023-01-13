@@ -7,9 +7,5 @@ export default defineEventHandler(async (event) => {
     delete event.node.req.session[params.key];
   }
 
-  if (method === 'PUT') {
-    event.node.req.session[params.key] = ''
-  }
-
   return { statusCode: 200 };
 });

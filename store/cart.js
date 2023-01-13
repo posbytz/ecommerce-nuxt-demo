@@ -56,7 +56,7 @@ export const useCartStore = defineStore('cart', {
       });
 
       await $fetch('/api/session', {
-        method: 'PUT',
+        method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
         params: { key: 'cart' },
       });

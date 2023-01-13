@@ -3,22 +3,21 @@
     <h1 class="text-xl font-medium">RATINGS</h1>
     <StarIcon class="w-6"></StarIcon>
   </div>
-
-  <div class="modal" :class="ImageModel.status ? 'modal-open' : null">
+  <div class="modal" :class="imageModel.status ? 'modal-open' : null">
     <div class="modal-box w-6/12 max-w-5xl bg-gray-800 self-center flex">
       <div class="w-1/5 flex items-center">
         <ChevronLeftIcon
           class="w-10 h-10 text-white"
           :class="
-            ImageModel.index == 0 ? 'cursor-not-allowed' : 'cursor-pointer'
+            imageModel.index == 0 ? 'cursor-not-allowed' : 'cursor-pointer'
           "
-          @click="() => modalNext('PREV')"
+          @click="() => changeModalImage('PREV')"
         >
         </ChevronLeftIcon>
       </div>
       <div class="w-3/5 h-96 items-center">
         <img
-          :src="ImageModel.image[ImageModel.index]"
+          :src="imageModel.image[imageModel.index]"
           class="w-96 h-96 object-contain select-none"
         />
       </div>
@@ -27,22 +26,21 @@
           <ChevronRightIcon
             class="w-10 h-10 text-white"
             :class="
-              ImageModel.index == ImageModel.image.length - 1
+              imageModel.index == imageModel.image.length - 1
                 ? 'cursor-not-allowed'
                 : 'cursor-pointer'
             "
-            @click="() => modalNext('NEXT')"
+            @click="() => changeModalImage('NEXT')"
           >
           </ChevronRightIcon>
         </div>
         <XMarkIcon
           class="w-10 h-10 text-white absolute cursor-pointer"
-          @click="modalClose"
+          @click="closeImageModel"
         ></XMarkIcon>
       </div>
     </div>
   </div>
-
   <div v-if="totalReview.rating" class="flex items-center">
     <div class="w-1/5">
       <div class="flex">
@@ -51,14 +49,11 @@
       </div>
       <div class="py-2">{{ totalReview.ratingCount }} reviews</div>
     </div>
-
     <div class="border-r h-36 mr-5"></div>
-
     <div class="w-3/5">
       <div class="mx-auto bg-white rounded-lg max-w-sm">
         <div class="mb-1 tracking-wide p-2">
           <div class="mx-2 px-2 pb-3">
-            <!-- 5 star -->
             <div
               class="flex items-center mt-1"
               v-if="totalReview.ratingPercentage"
@@ -95,13 +90,10 @@
       </div>
     </div>
   </div>
-
   <div v-if="totalReview.rating == 0">No Rating Found</div>
-
   <div class="w-full flex justify-start items-start flex-col py-5 mt-2">
-    <div class="flex justify-between w-11/12 items-center mb-5">
+    <div class="flex justify-between w-full items-center mb-5 pr-1">
       <h1 class="text-2xl font-medium text-gray-800">Customer Reviews</h1>
-
       <div v-if="userStore.user">
         <button
           v-if="ownReview.length > 0"
@@ -110,7 +102,6 @@
         >
           <PencilSquareIcon class="w-4 inline" /> edit your review
         </button>
-
         <button
           v-else
           class="bg-gray-100 border border-gray-400 px-3 py-1 rounded text-gray-800 hover:bg-blue-600 hover:text-white"
@@ -120,134 +111,120 @@
         </button>
       </div>
     </div>
-
     <div
       class="w-11/12 mb-8 py-3 pr-2"
       :class="writeReviewDisplay ? null : 'hidden'"
     >
-      <div class="mb-8">
-        <p class="py-3 text-gray-800 font-normal">Rate this product</p>
-
-        <div class="flex justify-between">
-          <div class="flex space-x-4">
-            <div
-              v-for="(star, index) in 5"
-              @click="() => starsCalculation(index)"
-            >
-              <StarIcon
-                v-if="starRating[index]"
-                class="w-6 text-yellow-500"
-              ></StarIcon>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
+      <Form @submit="loadPostReview">
+        <div class="mb-8">
+          <p class="py-3 text-gray-800 font-normal">Rate this product</p>
+          <div class="flex justify-between">
+            <div class="flex space-x-4">
+              <div
+                v-for="(star, index) in 5"
+                @click="() => starsCalculation(index)"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                />
-              </svg>
+                <StarIcon
+                  v-if="starRating[index]"
+                  class="w-6 text-yellow-500"
+                ></StarIcon>
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
-          <div
-            v-if="!validation.isStars && !starRating[0]"
-            class="text-red-500 px-5 text-sm"
-          >
-            Rating cannot be empty
-          </div>
         </div>
-      </div>
-
-      <div class="mb-8">
-        <label for="title" class="font-normal text-gray-900 block">Title</label>
-        <input
-          id="title"
-          type="text"
-          class="border-b border-gray-300 outline-none focus:border-blue-500 text-gray-900 block w-full p-3"
-          :placeholder="
-            validation.isTitle ? 'Review Title' : 'Title cannot be empty'
-          "
-          @change="setTitle"
-          :value="title"
-          :class="
-            validation.isTitle
-              ? null
-              : 'placeholder:text-red-500 placeholder:text-end placeholder:text-sm'
-          "
-        />
-      </div>
-      <div class="mb-8">
-        <label for="description" class="font-normal text-gray-900 pb-3 block"
-          >Description</label
-        >
-        <textarea
-          class="block w-full p-3 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-500 focus:outline-none"
-          rows="3"
-          placeholder="description"
-          @change="setDescription"
-          :value="description"
-        ></textarea>
-      </div>
-
-      <div
-        class="flex justify-start items-start mb-6 space-x-5 bg-gray-50 h-36 w-full overflow-x-auto"
-      >
-        <div
-          class="rounded border border-gray-100 bg-gray-200 hover:bg-gray-300 p-4 shadow-lg self-center ml-5"
-        >
-          <label
-            for="upload"
-            class="flex flex-col items-center gap-2 cursor-pointer"
+        <div class="mb-8">
+          <label for="title" class="font-normal text-gray-900 block"
+            >Title</label
           >
-            <CameraIcon class="w-8 text-gray-700"></CameraIcon>
-          </label>
-          <input
-            id="upload"
-            type="file"
-            class="hidden"
-            @change="handleImageUpload"
-            accept=".png, .jpg, .jpeg "
-            multiple
-          />
-        </div>
-
-        <div
-          v-if="image.length > 0"
-          v-for="(img, k) in image"
-          class="self-center"
-        >
-          <div v-if="img.preview" class="relative">
-            <img
-              :src="img.preview"
-              class="min-w-[96px] min-h-[96px] w-24 h-24 rounded-md object-contain"
-              alt="review_screenshot"
+          <Field name="title" :rules="validatetitle" v-model="title">
+            <input
+              id="title"
+              type="text"
+              class="border-b border-gray-300 outline-none focus:border-blue-500 text-gray-900 block w-full p-3"
+              placeholder="Review Title"
+              @change="setTitle"
+              :value="title"
             />
-            <span
-              class="w-7 h-7 rounded-full bg-gray-400 hover:bg-red-500 text-center font-bold absolute -right-2 -top-2 cursor-pointer"
-              @click="() => deleteImage(k)"
-              >x</span
+          </Field>
+          <ErrorMessage name="title" class="text-sm text-red-500 px-1 pt-1" />
+        </div>
+        <div class="mb-8">
+          <label for="description" class="font-normal text-gray-900 pb-3 block"
+            >Description</label
+          >
+          <textarea
+            class="block w-full p-3 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-500 focus:outline-none"
+            rows="3"
+            placeholder="description"
+            @change="setDescription"
+            :value="description"
+          ></textarea>
+        </div>
+        <div
+          class="flex justify-start items-start mb-6 space-x-5 bg-gray-50 h-36 w-full overflow-x-auto"
+        >
+          <div
+            class="rounded border border-gray-100 bg-gray-200 hover:bg-gray-300 p-4 shadow-lg self-center ml-5"
+          >
+            <label
+              for="upload"
+              class="flex flex-col items-center gap-2 cursor-pointer"
             >
+              <CameraIcon class="w-8 text-gray-700"></CameraIcon>
+            </label>
+            <input
+              id="upload"
+              type="file"
+              class="hidden"
+              @change="imageUpload"
+              accept=".png, .jpg, .jpeg "
+              multiple
+            />
+          </div>
+          <div
+            v-if="image.length > 0"
+            v-for="(img, k) in image"
+            class="self-center"
+          >
+            <div v-if="img.preview" class="relative">
+              <img
+                :src="img.preview"
+                class="min-w-[96px] min-h-[96px] w-24 h-24 rounded-md object-contain"
+                alt="review_screenshot"
+              />
+              <span
+                class="w-7 h-7 rounded-full bg-gray-400 hover:bg-red-500 text-center font-bold absolute -right-2 -top-2 cursor-pointer"
+                @click="() => deleteImage(k)"
+                >x</span
+              >
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="flex justify-end">
-        <button
-          type="button"
-          @click="postReview"
-          class="inline-block bg-blue-500 text-white font-medium leading-tight rounded py-2 px-6 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 transition duration-150 ease-in-out"
-        >
-          Submit
-        </button>
-      </div>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="inline-block bg-blue-500 text-white font-medium leading-tight rounded py-2 px-6 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 transition duration-150 ease-in-out"
+          >
+            Submit
+          </button>
+        </div>
+      </Form>
     </div>
-
     <div
       class="w-full my-3 bg-gray-100 p-5 rounded"
       v-if="productReviews.length > 0"
@@ -279,7 +256,6 @@
         >
           {{ review.description }}
         </p>
-
         <div
           v-if="review.image.length < 5"
           class="hidden md:flex mt-6 flex-row justify-start items-start space-x-4"
@@ -289,7 +265,7 @@
               :src="img"
               class="w-32 h-32 object-contain cursor-pointer"
               alt="review_screenshot"
-              @click="() => openModel(review.image, iteration)"
+              @click="() => openImageModel(review.image, iteration)"
             />
           </div>
         </div>
@@ -302,12 +278,12 @@
               :src="img"
               class="w-32 h-32 object-contain cursor-pointer"
               alt="review_screenshot"
-              @click="() => openModel(review.image, iteration)"
+              @click="() => openImageModel(review.image, iteration)"
             />
           </div>
           <div
             class="relative text-center cursor-pointer"
-            @click="() => openModel(review.image, 3)"
+            @click="() => openImageModel(review.image, 3)"
           >
             <img
               :src="review.image[3]"
@@ -321,7 +297,6 @@
             </div>
           </div>
         </div>
-
         <div
           class="mt-6 flex justify-between items-center flex-row space-x-2.5"
         >
@@ -335,16 +310,13 @@
               {{ review.createdAt }}
             </p>
           </div>
-
           <div class="flex px-3 space-x-8">
             <div class="flex space-x-2">
               <div class="cursor-pointer">
                 <HandThumbUpIcon
                   v-if="review.isLiked"
                   class="w-7 text-blue-500"
-                  @click="
-                    () => handleLikeReview(index, review.reviewId, 'LIKE')
-                  "
+                  @click="() => likeReviews(index, review.reviewId, 'LIKE')"
                 >
                 </HandThumbUpIcon>
                 <svg
@@ -352,7 +324,7 @@
                   @click="
                     () =>
                       userStore.user
-                        ? handleLikeReview(index, review.reviewId, 'LIKE')
+                        ? likeReviews(index, review.reviewId, 'LIKE')
                         : null
                   "
                   xmlns="http://www.w3.org/2000/svg"
@@ -371,22 +343,19 @@
               </div>
               <div class="select-none">{{ review.totalLikes }}</div>
             </div>
-
             <div class="flex space-x-2">
               <div class="cursor-pointer">
                 <HandThumbDownIcon
                   v-if="review.isDisliked"
                   class="w-7 text-blue-500"
-                  @click="
-                    () => handleLikeReview(index, review.reviewId, 'DISLIKE')
-                  "
+                  @click="() => likeReviews(index, review.reviewId, 'DISLIKE')"
                 ></HandThumbDownIcon>
                 <svg
                   v-else
                   @click="
                     () =>
                       userStore.user
-                        ? handleLikeReview(index, review.reviewId, 'DISLIKE')
+                        ? likeReviews(index, review.reviewId, 'DISLIKE')
                         : null
                   "
                   xmlns="http://www.w3.org/2000/svg"
@@ -405,7 +374,6 @@
               </div>
               <div class="select-none">{{ review.totalDislikes }}</div>
             </div>
-
             <div
               v-if="
                 ownReview.length > 0 && ownReview[0]._id === review.reviewId
@@ -421,7 +389,7 @@
                 tabindex="0"
                 class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-                <li @click="handleDeleteReview"><a>Delete</a></li>
+                <li @click="deleteUserReview"><a>Delete</a></li>
               </ul>
             </div>
             <EllipsisVerticalIcon
@@ -432,22 +400,20 @@
         </div>
       </div>
     </div>
-
     <div v-if="totalReview.rating == 0">No customer reviews</div>
-
     <div v-if="productReviews.length > 0" class="self-center">
       <div class="btn-group grid grid-cols-2">
         <button
           class="btn btn-outline btn-primary"
           @click="() => loadPagination('PREV')"
-          :disabled="ButtonDisable.previous"
+          :disabled="buttonDisable.previous"
         >
           <ChevronLeftIcon class="w-4 h-4"></ChevronLeftIcon>Previous
         </button>
         <button
           class="btn btn-outline btn-primary"
           @click="() => loadPagination('NEXT')"
-          :disabled="ButtonDisable.next"
+          :disabled="buttonDisable.next"
         >
           Next<ChevronRightIcon class="w-4 h-4"></ChevronRightIcon>
         </button>
@@ -455,6 +421,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
   import { PencilSquareIcon } from '@heroicons/vue/24/outline';
   import {
@@ -468,6 +435,7 @@
     XMarkIcon,
   } from '@heroicons/vue/24/solid';
   import { useUserStore } from '@/store/user';
+  import { Field, Form, ErrorMessage } from 'vee-validate';
 
   const props = defineProps({
     itemId: {
@@ -475,8 +443,10 @@
       required: true,
     },
   });
-
-  const starRating = ref([false, false, false, false, false]);
+  const emit = defineEmits(['star-event']);
+  const userStore = useUserStore();
+  
+  const starRating = ref([true, false, false, false, false]);
   const individualRating = ref({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 });
   const writeReviewDisplay = ref(false);
   const title = ref('');
@@ -485,21 +455,15 @@
   const ownReview = ref([]);
   const productReviews = ref([]);
   const image = ref([]);
-  const { changeStarRating } = useStarRating();
-  const ButtonDisable = ref({
+  const buttonDisable = ref({
     previous: true,
     next: false,
   });
   const pageCount = ref({});
-  const ImageModel = ref({
+  const imageModel = ref({
     status: false,
     image: [],
   });
-  const validation = ref({ isStars: true, isTitle: true });
-
-  const userStore = useUserStore();
-
-  //  Aws File Upload
 
   const convertToBase64 = (file) => {
     return new Promise((resolve) => {
@@ -511,8 +475,8 @@
     });
   };
 
-  let awsImageUpload = async (image, reviewId) => {
-    let ImageLinks = [];
+  const awsImageUpload = async (image, reviewId) => {
+    let imageLinks = [];
     let images =
       image
         .filter((e) => {
@@ -530,7 +494,6 @@
     if (images.length > 0 && reviewId) {
       await images.forEach(async (img) => {
         const convertedFile = await convertToBase64(img);
-
         let imageData = {
           image: convertedFile,
           imageName: img.name || '',
@@ -545,13 +508,13 @@
             return response;
           },
         });
-        ImageLinks.push(postImage);
+        imageLinks.push(postImage);
 
-        if (ImageLinks.length == images.length)
-          handleUpdateReview(ImageLinks, reviewId);
+        if (imageLinks.length == images.length)
+          updateUserReview(imageLinks, reviewId);
       });
     } else {
-      handleUpdateReview(ImageLinks, reviewId);
+      updateUserReview(imageLinks, reviewId);
     }
   };
 
@@ -568,7 +531,6 @@
       (acc, cv) => acc + cv,
       0
     );
-
     let ratingPercent = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
     for (const key in individualRating.value) {
@@ -581,7 +543,6 @@
 
     let starsCount =
       totalRating == 0 ? 0 : (totalRating / totalUserRating).toFixed(1);
-    changeStarRating(starsCount);
 
     return {
       rating: starsCount,
@@ -595,7 +556,7 @@
     title.value = '';
     description.value = '';
     image.value = [];
-    starsCalculation(-1);
+    starsCalculation(0);
   };
 
   const updateImage = (img) => {
@@ -634,7 +595,7 @@
     return dateResult;
   };
 
-  const handleImageUpload = (e) => {
+  const imageUpload = (e) => {
     e.preventDefault();
 
     let img = [];
@@ -658,36 +619,42 @@
     image.value = [...image.value, ...img];
   };
 
-  let setTitle = (e) => (title.value = e.target.value);
-  let setDescription = (e) => (description.value = e.target.value);
-
-  let calculateRating = (stars) => {
+  const setTitle = (e) => (title.value = e.target.value);
+  const setDescription = (e) => (description.value = e.target.value);
+  const calculateRating = (stars) => {
     let count = stars ? stars.filter((e) => e === true).length : 0;
     return count;
   };
 
-  let openModel = (img, index) => {
-    ImageModel.value = {
+  const validatetitle = (value) => {
+    if (!value) {
+      return 'Title cannot be empty';
+    }
+    return true;
+  };
+
+  const openImageModel = (img, index) => {
+    imageModel.value = {
       status: true,
       image: img,
       index: index,
     };
   };
 
-  let modalClose = () => {
-    ImageModel.value.status = false;
+  const closeImageModel = () => {
+    imageModel.value.status = false;
   };
 
-  let modalNext = (button) => {
-    let temp = ImageModel.value;
+  const changeModalImage = (button) => {
+    let temp = imageModel.value;
 
     if (button === 'NEXT' && temp.index < temp.image.length - 1) {
       temp.index = temp.index + 1;
-      ImageModel.value = temp;
+      imageModel.value = temp;
     }
     if (button === 'PREV' && temp.index !== 0) {
       temp.index = temp.index - 1;
-      ImageModel.value = temp;
+      imageModel.value = temp;
     }
   };
 
@@ -697,30 +664,17 @@
 
     if (page == 'NEXT' && currentPage >= 1 && currentPage < lastPage) {
       pageCount.value.currentPage = currentPage + 1;
-      ButtonDisable.value.previous = false;
-      handleGetReview();
+      buttonDisable.value.previous = false;
+      getReviews();
     }
     if (page == 'PREV' && currentPage > 1) {
       pageCount.value.currentPage = currentPage - 1;
-      handleGetReview();
-      ButtonDisable.value.next = false;
+      getReviews();
+      buttonDisable.value.next = false;
     }
   };
 
-  let reviewValidation = () => {
-    let rating = calculateRating(starRating.value);
-    let titles = title.value;
-
-    if (!rating) validation.value.isStars = false;
-    else validation.value.isStars = true;
-
-    if (!titles) validation.value.isTitle = false;
-    else validation.value.isTitle = true;
-  };
-
-  // Api Requests
-
-  const handleGetReview = () => {
+  const getReviews = () => {
     const { data: getReviews } = useAsyncData('getReviews', async () => {
       let response;
       try {
@@ -738,7 +692,7 @@
         });
 
         let resultReview = response.data.results;
-        const userReview = JSON.parse(JSON.stringify(response.data.userReview));
+        let userReview = JSON.parse(JSON.stringify(response.data.userReview));
         let page = response.data.pagination;
 
         if (userReview.length > 0) {
@@ -771,17 +725,18 @@
         pageCount.value = response.data.pagination;
 
         if (pageCount.value.currentPage == pageCount.value.lastPage)
-          ButtonDisable.value.next = true;
+          buttonDisable.value.next = true;
         if (pageCount.value.currentPage == 1)
-          ButtonDisable.value.previous = true;
+          buttonDisable.value.previous = true;
+        emit('star-event', totalReview?.value.rating);
       } catch (error) {
         console.log(error);
       }
     });
   };
-  handleGetReview();
+  getReviews();
 
-  const handlePostReview = async () => {
+  const postUserReview = async () => {
     let ratingData = {
       itemId: props.itemId,
       rating: calculateRating(starRating.value),
@@ -801,14 +756,13 @@
     if (reviewResult && image.value.length > 0) {
       await awsImageUpload(image.value, reviewResult._id);
     }
-    if (reviewResult && image.value.length == 0) handleGetReview();
+    if (reviewResult && image.value.length == 0) getReviews();
   };
 
-  const handleUpdateReview = async (awsImages, reviewId) => {
+  const updateUserReview = async (awsImages, reviewId) => {
     let param = ownReview.value.length > 0 ? ownReview.value[0]._id : reviewId;
     let oldImages = ownReview.value.length > 0 ? ownReview.value[0].image : [];
     let imageData = awsImages ? [...oldImages, ...awsImages] : [...oldImages];
-
     let ratingData = {
       itemId: props.itemId,
       rating: calculateRating(starRating.value),
@@ -825,28 +779,21 @@
         return response.data;
       },
     });
-    handleGetReview();
-    validation.value.isStars = true;
-    validation.value.isTitle = true;
+    getReviews();
   };
 
-  const postReview = async () => {
-    reviewValidation();
-    if (validation.value.isStars && validation.value.isTitle) {
-      if (ownReview.value.length > 0) {
-        if (image.value.length > 0)
-          await awsImageUpload(image.value, ownReview.value[0]._id);
-        else handleUpdateReview();
-      } else {
-        handlePostReview();
-      }
-      writeReviewDisplay.value = false;
+  const loadPostReview = async () => {
+    if (ownReview.value.length > 0) {
+      if (image.value.length > 0)
+        await awsImageUpload(image.value, ownReview.value[0]._id);
+      else updateUserReview();
     } else {
-      writeReviewDisplay.value = true;
+      postUserReview();
     }
+    writeReviewDisplay.value = false;
   };
 
-  const handleDeleteReview = async () => {
+  const deleteUserReview = async () => {
     let param = ownReview.value[0]._id;
     writeReviewDisplay.value = false;
 
@@ -855,13 +802,13 @@
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
       });
-      handleGetReview();
+      getReviews();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleLikeReview = async (index, reviewId, task) => {
+  const likeReviews = async (index, reviewId, task) => {
     let temp = productReviews.value[index];
     let reviewData;
 

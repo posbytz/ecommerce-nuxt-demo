@@ -49,7 +49,6 @@
               >
                 View Details
               </button>
-
               <button
                 v-if="order.status == 'complete'"
                 type="button"
@@ -64,7 +63,6 @@
             </div>
           </div>
         </div>
-
         <div class="modal" :class="reorderModalOpen ? 'modal-open' : null">
           <div class="modal-box">
             <div class="flex justify-between">
@@ -93,7 +91,6 @@
             </div>
           </div>
         </div>
-
         <div
           ref="modalElement"
           class="modal"
@@ -135,7 +132,6 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-
             <div>
               <div class="text-gray-400 font-medium text-lg">
                 Delivery Address:
@@ -154,7 +150,6 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-
             <div class="flex">
               <div class="w-8/12">
                 <div class="text-gray-400 font-medium text-lg pb-2">
@@ -170,7 +165,6 @@
                 </div>
               </div>
             </div>
-
             <div v-for="item in orderDetails?.items" class="flex">
               <div class="w-8/12">
                 <div>{{ item.name }}</div>
@@ -184,9 +178,7 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-
             <div class="divider divider-horizonal"></div>
-
             <div class="flex justify-between">
               <div>Subtotal</div>
               <div class="px-2">
@@ -218,7 +210,6 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-
             <div class="flex justify-between">
               <div>
                 <div class="text-xl font-medium">Total</div>
@@ -234,7 +225,6 @@
             <div class="divider divider-horizonal"></div>
           </div>
         </div>
-
         <div class="text-right">
           <Pagination :options="orders.pagination" @change="refreshOrders" />
         </div>

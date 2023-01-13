@@ -23,7 +23,7 @@
       </h1>
       <p class="inline text-slate-500">
         <span class="mx-2">-</span
-        >{{ category ? category.itemsCount : brand?.TotalCount }} Items
+        >{{ category ? category.itemsCount : brand?.pagination.totalResults }} Items
       </p>
     </div>
     <div class="flex justify-between items-center mb-3">
@@ -80,7 +80,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.brand.length && !isBrand">
+        <template v-if="items.filters.brand.length && type !== 'brand'">
           <p class="font-medium mb-2">Brand</p>
           <div
             v-for="(brand, i) in items.filters.brand"
@@ -104,21 +104,6 @@
           </div>
           <div class="divider my-2" />
         </template>
-
-        <!-- <template v-if="items.filters.category.length && isBrand">
-          <p class="font-medium mb-2">Category</p>
-          <div v-for="(category, i) in items.filters.category" :key="category._id" class="form-control"
-            :class="{ 'mb-1': i < items.filters.category.length - 1 }">
-            <label class="label justify-start cursor-pointer p-0">
-              <input type="checkbox" name="categoryId" class="checkbox checkbox-xs mr-3" :value="category._id"
-                @change="onChangeFilters" />
-              <span class="label-text">{{ category.name }}</span>
-              <span class="text-slate-400 text-2xs ml-1">({{ category.count }})</span>
-            </label>
-          </div>
-          <div class="divider my-2" />
-        </template> -->
-
         <template v-if="items.filters.price.length">
           <p class="font-medium mb-2">Price</p>
           <div
@@ -209,11 +194,10 @@
 <script setup>
   const route = useRoute();
   const router = useRouter();
-  const { itemGroup, slug } = route.params;
-  const isBrand = ref(itemGroup.includes('brand'));
+  const { type, slug } = route.params;
 
   const { data: category } =
-    !isBrand.value &&
+    type !== 'brand' &&
     (await useFetch('/api/v1/categories', {
       headers: useRequestHeaders(['cookie']),
       params: { slug: [slug] },
@@ -223,7 +207,7 @@
     }));
 
   const { data: brand } =
-    isBrand.value &&
+  type === 'brand' &&
     (await useFetch('/api/v1/brands', {
       headers: useRequestHeaders(['cookie']),
       query: { slug: [slug] },
@@ -237,7 +221,7 @@
     {
       headers: useRequestHeaders(['cookie']),
       onRequest({ request, options }) {
-        if (isBrand.value) {
+        if (type === 'brand') {
           options.params = {
             brandId: brand?.value.results[0]._id,
             ...route.query,

@@ -32,7 +32,7 @@
               :src="image"
               alt="Two each of gray, white, and black shirts laying flat."
               class="h-full w-full object-cover object-center hover:scale-105 ease-in duration-200"
-              @click="() => openModel(item.images, index)"
+              @click="() => openImageModel(item.images, index)"
             />
           </div>
         </div>
@@ -42,92 +42,19 @@
         <h1 class="text-2xl font-medium">
           {{ item.name }}
         </h1>
-
-        <div v-if="productStarRating" class="rating rating-sm rating-half">
+        <div v-if="starChecked" class="rating rating-sm rating-half">
           <input type="radio" name="rating-10" class="rating-hidden" />
           <input
+            v-for="key in 10"
             type="radio"
             name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-1"
-            :checked="
-              productStarRating >= 0 && productStarRating < 1 ? true : false
-            "
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-2"
-            :checked="productStarRating == 1 ? true : false"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-1"
-            :checked="
-              productStarRating > 1 && productStarRating < 2 ? true : false
-            "
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-2"
-            :checked="productStarRating == 2 ? true : false"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-1"
-            :checked="
-              productStarRating > 2 && productStarRating < 3 ? true : false
-            "
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-2"
-            :checked="productStarRating == 3 ? true : false"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-1"
-            :checked="
-              productStarRating > 3 && productStarRating < 4 ? true : false
-            "
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-2"
-            :checked="productStarRating == 4 ? true : false"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-1"
-            :checked="
-              productStarRating > 4 && productStarRating < 5 ? true : false
-            "
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-10"
-            class="bg-yellow-400 mask mask-star mask-half-2"
-            :checked="productStarRating == 5 ? true : false"
+            class="bg-yellow-400 mask mask-star"
+            :class="key % 2 == 1 ? 'mask-half-1' : 'mask-half-2'"
+            :checked="key == starChecked ? true : false"
             disabled
           />
         </div>
-
-        <div v-if="productStarRating == 0" class="rating rating-sm">
+        <div v-if="starChecked == 0" class="rating rating-sm">
           <input
             type="radio"
             name="rating-1"
@@ -143,7 +70,6 @@
             disabled
           />
         </div>
-
         <div class="divider mt-0 mb-2" />
         <div class="mb-3">
           <p class="text-xl leading-none">
@@ -212,18 +138,17 @@
           >
             <ShoppingBagIcon class="w-4" /> Add to Cart
           </button>
-          <button class="btn btn-outline gap-2">
+          <!-- <button class="btn btn-outline gap-2">
             <HeartIcon class="w-4" />Wishlist
-          </button>
+          </button> -->
         </div>
         <div class="divider mt-3 mb-1" />
         <div v-if="item.description" class="my-3">
           <p class="text-xl font-medium mb-2">Product Details</p>
           <p class="w-4/5">{{ item.description }}</p>
         </div>
-        <Review :itemId="item._id"></Review>
-
-        <div class="modal" :class="ImageModel.status ? 'modal-open' : null">
+        <Review :itemId="item._id" @star-event="starCheckedStatus"></Review>
+        <div class="modal" :class="imageModel.status ? 'modal-open' : null">
           <div
             class="modal-box w-7/12 max-w-5xl h-5/6 bg-gray-800 self-center flex"
           >
@@ -231,17 +156,17 @@
               <ChevronLeftIcon
                 class="w-10 h-10 text-white cursor-pointer"
                 :class="
-                  ImageModel.index == 0
+                  imageModel.index == 0
                     ? 'cursor-not-allowed'
                     : 'cursor-pointer'
                 "
-                @click="() => modalNext('PREV')"
+                @click="() => changeImageModel('PREV')"
               >
               </ChevronLeftIcon>
             </div>
             <div class="w-10/12 h-full flex justify-center items-center">
               <img
-                :src="ImageModel.image[ImageModel.index]"
+                :src="imageModel.image[imageModel.index]"
                 class="w-full h-full object-contain select-none"
               />
             </div>
@@ -250,17 +175,17 @@
                 <ChevronRightIcon
                   class="w-10 h-10 text-white cursor-pointer"
                   :class="
-                    ImageModel.index == ImageModel.image.length - 1
+                    imageModel.index == imageModel.image.length - 1
                       ? 'cursor-not-allowed'
                       : 'cursor-pointer'
                   "
-                  @click="() => modalNext('NEXT')"
+                  @click="() => changeImageModel('NEXT')"
                 >
                 </ChevronRightIcon>
               </div>
               <XMarkIcon
                 class="w-10 h-10 text-white absolute cursor-pointer"
-                @click="modalClose"
+                @click="closeImageModel"
               ></XMarkIcon>
             </div>
           </div>
@@ -285,11 +210,11 @@
 
   const cartStore = useCartStore();
   const route = useRoute();
-  const { productStarRating } = useStarRating();
-  const ImageModel = ref({
+  const imageModel = ref({
     status: false,
     image: [],
   });
+  const starChecked = ref(0);
 
   const { data: item } = await useFetch('/api/v1/items', {
     headers: useRequestHeaders(['cookie', 'host']),
@@ -386,28 +311,38 @@
     event.target.classList.remove('loading');
   };
 
-  let openModel = (img, index) => {
-    ImageModel.value = {
+  const starCheckedStatus = (star) => {
+    let count = 0;
+
+    for (var i = 1; i <= 10; i++) {
+      if (star == count + 1 && i % 2 == 0) starChecked.value = i;
+      if (star > count && star < count + 1 && i % 2 == 1) starChecked.value = i;
+      if (i % 2 == 0) count++;
+    }
+  };
+
+  let openImageModel = (img, index) => {
+    imageModel.value = {
       status: true,
       image: img,
       index: index,
     };
   };
 
-  let modalClose = () => {
-    ImageModel.value.status = false;
+  let closeImageModel = () => {
+    imageModel.value.status = false;
   };
 
-  let modalNext = (button) => {
-    let temp = ImageModel.value;
+  let changeImageModel = (button) => {
+    let temp = imageModel.value;
 
     if (button === 'NEXT' && temp.index < temp.image.length - 1) {
       temp.index = temp.index + 1;
-      ImageModel.value = temp;
+      imageModel.value = temp;
     }
     if (button === 'PREV' && temp.index !== 0) {
       temp.index = temp.index - 1;
-      ImageModel.value = temp;
+      imageModel.value = temp;
     }
   };
 </script>

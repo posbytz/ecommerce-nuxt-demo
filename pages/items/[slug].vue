@@ -2,7 +2,9 @@
   <div class="p-5">
     <div class="breadcrumbs text-sm py-0 mb-4">
       <ul>
-        <li><NuxtLink href="/">Home</NuxtLink></li>
+        <li>
+          <NuxtLink href="/">Home</NuxtLink>
+        </li>
         <li
           v-for="(parentCategory, i) in item.category.parentCategories"
           :key="i"
@@ -22,32 +24,15 @@
     <div class="flex">
       <div class="w-1/2">
         <div class="grid grid-cols-2 gap-5">
-          <div class="rounded-lg overflow-hidden">
+          <div
+            v-for="(image, index) in item.images"
+            class="rounded-lg overflow-hidden"
+          >
             <img
-              src="https://tailwindui.com/img/ecommerce-images/product-page-02-secondary-product-shot.jpg"
+              :src="image"
               alt="Two each of gray, white, and black shirts laying flat."
               class="h-full w-full object-cover object-center hover:scale-105 ease-in duration-200"
-            />
-          </div>
-          <div class="rounded-lg overflow-hidden">
-            <img
-              src="https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-01.jpg"
-              alt="Model wearing plain black basic tee."
-              class="h-full w-full object-cover object-center hover:scale-105 ease-in duration-200"
-            />
-          </div>
-          <div class="rounded-lg overflow-hidden">
-            <img
-              src="https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-02.jpg"
-              alt="Model wearing plain gray basic tee."
-              class="h-full w-full object-cover object-center hover:scale-105 ease-in duration-200"
-            />
-          </div>
-          <div class="rounded-lg overflow-hidden">
-            <img
-              src="https://tailwindui.com/img/ecommerce-images/product-page-02-featured-product-shot.jpg"
-              alt="Model wearing plain white basic tee."
-              class="h-full w-full object-cover object-center hover:scale-105 ease-in duration-200"
+              @click="() => openImageModel(item.images, index)"
             />
           </div>
         </div>
@@ -57,33 +42,28 @@
         <h1 class="text-2xl font-medium">
           {{ item.name }}
         </h1>
-        <div class="rating rating-sm">
+        <div v-if="starChecked" class="rating rating-sm rating-half">
+          <input type="radio" name="rating-10" class="rating-hidden" />
           <input
+            v-for="key in 10"
             type="radio"
-            name="rating-1"
-            class="mask mask-star bg-yellow-400"
+            name="rating-10"
+            class="bg-yellow-400 mask mask-star"
+            :class="key % 2 == 1 ? 'mask-half-1' : 'mask-half-2'"
+            :checked="key == starChecked ? true : false"
             disabled
           />
+        </div>
+        <div v-if="starChecked == 0" class="rating rating-sm">
           <input
             type="radio"
             name="rating-1"
-            class="mask mask-star bg-yellow-400"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-1"
-            class="mask mask-star bg-yellow-400"
-            disabled
-          />
-          <input
-            type="radio"
-            name="rating-1"
-            class="mask mask-star bg-yellow-400"
+            class="rating-hidden"
             checked
             disabled
           />
           <input
+            v-for="star in 5"
             type="radio"
             name="rating-1"
             class="mask mask-star bg-yellow-400"
@@ -147,7 +127,8 @@
             class="btn btn-primary gap-2 mr-3"
             to="/checkout"
           >
-            Go to Cart <ArrowRightIcon class="w-4" />
+            Go to Cart
+            <ArrowRightIcon class="w-4" />
           </NuxtLink>
           <button
             v-else
@@ -157,14 +138,57 @@
           >
             <ShoppingBagIcon class="w-4" /> Add to Cart
           </button>
-          <button class="btn btn-outline gap-2">
+          <!-- <button class="btn btn-outline gap-2">
             <HeartIcon class="w-4" />Wishlist
-          </button>
+          </button> -->
         </div>
         <div class="divider mt-3 mb-1" />
-        <div v-if="item.description" class="mb-3">
+        <div v-if="item.description" class="my-3">
           <p class="text-xl font-medium mb-2">Product Details</p>
-          <p>{{ item.description }}</p>
+          <p class="w-4/5">{{ item.description }}</p>
+        </div>
+        <Review :itemId="item._id" @star-event="starCheckedStatus"></Review>
+        <div class="modal" :class="imageModel.status ? 'modal-open' : null">
+          <div
+            class="modal-box w-7/12 max-w-5xl h-5/6 bg-gray-800 self-center flex"
+          >
+            <div class="w-1/12 flex items-center">
+              <ChevronLeftIcon
+                class="w-10 h-10 text-white cursor-pointer"
+                :class="
+                  imageModel.index == 0
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
+                "
+                @click="() => changeImageModel('PREV')"
+              >
+              </ChevronLeftIcon>
+            </div>
+            <div class="w-10/12 h-full flex justify-center items-center">
+              <img
+                :src="imageModel.image[imageModel.index]"
+                class="w-full h-full object-contain select-none"
+              />
+            </div>
+            <div class="w-1/12 grid justify-items-end relative">
+              <div class="flex items-center">
+                <ChevronRightIcon
+                  class="w-10 h-10 text-white cursor-pointer"
+                  :class="
+                    imageModel.index == imageModel.image.length - 1
+                      ? 'cursor-not-allowed'
+                      : 'cursor-pointer'
+                  "
+                  @click="() => changeImageModel('NEXT')"
+                >
+                </ChevronRightIcon>
+              </div>
+              <XMarkIcon
+                class="w-10 h-10 text-white absolute cursor-pointer"
+                @click="closeImageModel"
+              ></XMarkIcon>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -178,9 +202,19 @@
     ArrowRightIcon,
   } from '@heroicons/vue/24/outline/index.js';
   import { useCartStore } from '@/store/cart';
+  import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    XMarkIcon,
+  } from '@heroicons/vue/24/solid';
 
   const cartStore = useCartStore();
   const route = useRoute();
+  const imageModel = ref({
+    status: false,
+    image: [],
+  });
+  const starChecked = ref(0);
 
   const { data: item } = await useFetch('/api/v1/items', {
     headers: useRequestHeaders(['cookie', 'host']),
@@ -275,6 +309,41 @@
     });
     event.target.disabled = false;
     event.target.classList.remove('loading');
+  };
+
+  const starCheckedStatus = (star) => {
+    let count = 0;
+
+    for (var i = 1; i <= 10; i++) {
+      if (star == count + 1 && i % 2 == 0) starChecked.value = i;
+      if (star > count && star < count + 1 && i % 2 == 1) starChecked.value = i;
+      if (i % 2 == 0) count++;
+    }
+  };
+
+  let openImageModel = (img, index) => {
+    imageModel.value = {
+      status: true,
+      image: img,
+      index: index,
+    };
+  };
+
+  let closeImageModel = () => {
+    imageModel.value.status = false;
+  };
+
+  let changeImageModel = (button) => {
+    let temp = imageModel.value;
+
+    if (button === 'NEXT' && temp.index < temp.image.length - 1) {
+      temp.index = temp.index + 1;
+      imageModel.value = temp;
+    }
+    if (button === 'PREV' && temp.index !== 0) {
+      temp.index = temp.index - 1;
+      imageModel.value = temp;
+    }
   };
 </script>
 

@@ -71,7 +71,7 @@
     get() {
       if (item.value.inventory?.price < item.value.inventory?.mrp) {
         return (
-          100 - (item.value.inventory?.price / item.value.inventory?.mrp) * 100
+          Math.floor(100 - (item.value.inventory?.price / item.value.inventory?.mrp) * 100)
         );
       }
 

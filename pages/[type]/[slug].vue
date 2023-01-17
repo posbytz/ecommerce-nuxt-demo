@@ -2,19 +2,28 @@
   <div class="px-5 pt-5">
     <div class="breadcrumbs text-sm py-0 mb-3">
       <ul>
-        <li><NuxtLink href="/">Home</NuxtLink></li>
-        <li v-for="(parentCategory, i) in category.parentCategories" :key="i">
+        <li>
+          <NuxtLink href="/">Home</NuxtLink>
+        </li>
+        <li
+          v-if="category"
+          v-for="(parentCategory, i) in category.parentCategories"
+          :key="i"
+        >
           <NuxtLink :to="`/categories/${parentCategory.slug}`">{{
             parentCategory.name
           }}</NuxtLink>
         </li>
-        <li>{{ category.name }}</li>
+        <li>{{ category ? category.name : brand?.results[0].name }}</li>
       </ul>
     </div>
     <div class="flex items-center mb-3">
-      <h1 class="inline text-2xl">{{ category.name }}</h1>
+      <h1 class="inline text-2xl">
+        {{ category ? category.name : brand?.results[0].name }}
+      </h1>
       <p class="inline text-slate-500">
-        <span class="mx-2">-</span>{{ category.itemsCount }} Items
+        <span class="mx-2">-</span
+        >{{ category ? category.itemsCount : brand?.pagination.totalResults }} Items
       </p>
     </div>
     <div class="flex justify-between items-center mb-3">
@@ -56,7 +65,7 @@
         class="w-1/5 sticky top-16 overflow-auto border-r py-5 pr-5"
         style="max-height: calc(100vh - 64px)"
       >
-        <template v-if="category.subCategories.length">
+        <template v-if="category && category.subCategories.length">
           <p class="font-medium mb-2">Sub-Categories</p>
           <div
             v-for="subCategory in category.subCategories"
@@ -71,7 +80,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.brand.length">
+        <template v-if="items.filters.brand.length && type !== 'brand'">
           <p class="font-medium mb-2">Brand</p>
           <div
             v-for="(brand, i) in items.filters.brand"
@@ -185,24 +194,44 @@
 <script setup>
   const route = useRoute();
   const router = useRouter();
+  const { type, slug } = route.params;
 
-  const { data: category } = await useFetch('/api/v1/categories', {
-    headers: useRequestHeaders(['cookie']),
-    params: { slug: [route.params.slug] },
-    transform(response) {
-      return response.data.results[0];
-    },
-  });
+  const { data: category } =
+    type !== 'brand' &&
+    (await useFetch('/api/v1/categories', {
+      headers: useRequestHeaders(['cookie']),
+      params: { slug: [slug] },
+      transform(response) {
+        return response.data.results[0];
+      },
+    }));
+
+  const { data: brand } =
+  type === 'brand' &&
+    (await useFetch('/api/v1/brands', {
+      headers: useRequestHeaders(['cookie']),
+      query: { slug: [slug] },
+      transform(response) {
+        return response.data;
+      },
+    }));
 
   const { data: items, refresh: refreshItems } = await useFetch(
     '/api/v1/items',
     {
       headers: useRequestHeaders(['cookie']),
       onRequest({ request, options }) {
-        options.params = {
-          categoryId: category.value._id,
-          ...route.query,
-        };
+        if (type === 'brand') {
+          options.params = {
+            brandId: brand?.value.results[0]._id,
+            ...route.query,
+          };
+        } else {
+          options.params = {
+            categoryId: category?.value._id,
+            ...route.query,
+          };
+        }
       },
       transform(response) {
         return response.data;

@@ -23,7 +23,7 @@
               <label class="label">
                 <span class="label-text">Name *</span>
               </label>
-              <Field v-model="name" v-slot="{ field }" name="name">
+              <Field v-model="name" v-slot="{ field }" name="name" >
                 <input
                   v-bind="field"
                   type="text"

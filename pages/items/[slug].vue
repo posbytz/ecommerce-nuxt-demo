@@ -138,9 +138,15 @@
           >
             <ShoppingBagIcon class="w-4" /> Add to Cart
           </button>
-          <!-- <button class="btn btn-outline gap-2">
-            <HeartIcon class="w-4" />Wishlist
-          </button> -->
+          <button
+            class="btn btn-outline gap-2"
+            @click="(event) => toggleWishlist(item._id, event)"
+          >
+            <HeartIcon v-if="wishlistStatus" class="w-5 text-red-500" />
+            <HeartIcon v-else class="w-5" />{{
+              wishlistStatus ? 'Wishlisted' : 'Wishlist'
+            }}
+          </button>
         </div>
         <div class="divider mt-3 mb-1" />
         <div v-if="item.description" class="my-3">
@@ -198,23 +204,26 @@
 <script setup>
   import {
     ShoppingBagIcon,
-    HeartIcon,
     ArrowRightIcon,
   } from '@heroicons/vue/24/outline/index.js';
   import { useCartStore } from '@/store/cart';
+  import { useToastStore } from '@/store/toast'
   import {
     ChevronLeftIcon,
     ChevronRightIcon,
+    HeartIcon,
     XMarkIcon,
   } from '@heroicons/vue/24/solid';
 
   const cartStore = useCartStore();
+  const toastStore = useToastStore()
   const route = useRoute();
   const imageModel = ref({
     status: false,
     image: [],
   });
   const starChecked = ref(0);
+  const wishlistStatus = ref(false);
 
   const { data: item } = await useFetch('/api/v1/items', {
     headers: useRequestHeaders(['cookie', 'host']),
@@ -345,6 +354,55 @@
       imageModel.value = temp;
     }
   };
+
+  let toggleWishlist = async (itemId, event) => {
+    if (!wishlistStatus.value) {
+      event.target.disabled = true;
+      let { data: wishlist } = await useFetch('/api/v1/user/wishlist', {
+        method: 'POST',
+        headers: useRequestHeaders(['cookie']),
+        body: {
+          itemId: itemId,
+        },
+        transform(response) {
+          return response.data;
+        },
+      });
+      event.target.disabled = false;
+
+      if (wishlist?.value.includes(itemId)) {
+        toastStore.showToast("Added to your Wishlist")
+        wishlistStatus.value = true;
+      }
+    } else {
+      event.target.disabled = true;
+      let { data: response } = await useFetch(
+        `/api/v1/user/wishlist/${itemId}`,
+        {
+          method: 'DELETE',
+          headers: useRequestHeaders(['cookie']),
+        }
+      );
+      event.target.disabled = false;
+
+      if (response?.value.statusCode === 200) {
+        toastStore.showToast("Removed from your Wishlist.")
+        wishlistStatus.value = false;
+      }
+    }
+  };
+
+  const { data: wishlistData } = await useFetch('/api/v1/user/wishlist', {
+    headers: useRequestHeaders(['cookie', 'host']),
+    transform(response) {
+      return response.data;
+    },
+  });
+
+  if (wishlistData.value?.results.length) {
+    let wishListArray = wishlistData.value.results.map((e) => e._id);
+    wishlistStatus.value = wishListArray.includes(item.value._id);
+  }
 </script>
 
 <style scoped>

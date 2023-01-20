@@ -142,6 +142,9 @@
             <NuxtLink to="/account/addresses">Addresses</NuxtLink>
           </li>
           <li @click="$blurActiveElement">
+            <NuxtLink to="/account/wishlist">Wishlist</NuxtLink>
+          </li>
+          <li @click="$blurActiveElement">
             <NuxtLink to="/account/orders">Orders</NuxtLink>
           </li>
           <li @click="$blurActiveElement">

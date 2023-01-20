@@ -244,9 +244,9 @@
         <p class="text-slate-400 mb-4">
           There is nothing in your cart. Let's add some items
         </p>
-        <button class="btn btn-outline btn-primary">
-          Add items from wishlist
-        </button>
+        <NuxtLink to="/account/wishlist" class="btn btn-outline btn-primary"
+          >Add items from wishlist
+        </NuxtLink>
       </div>
     </div>
     <div class="flex items-center justify-between border-t px-20 py-4">

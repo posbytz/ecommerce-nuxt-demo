@@ -5,6 +5,7 @@
   <div>
     <Navbar />
     <slot />
+    <Toast></Toast>
     <Footer />
   </div>
 </template>

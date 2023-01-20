@@ -154,11 +154,6 @@
           <p class="w-4/5">{{ item.description }}</p>
         </div>
         <Review :itemId="item._id" @star-event="starCheckedStatus"></Review>
-        <Toast
-          v-if="toastDisplay.status"
-          :message="toastDisplay.message"
-        ></Toast>
-
         <div class="modal" :class="imageModel.status ? 'modal-open' : null">
           <div
             class="modal-box w-7/12 max-w-5xl h-5/6 bg-gray-800 self-center flex"
@@ -212,6 +207,7 @@
     ArrowRightIcon,
   } from '@heroicons/vue/24/outline/index.js';
   import { useCartStore } from '@/store/cart';
+  import { useToastStore } from '@/store/toast'
   import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -220,16 +216,13 @@
   } from '@heroicons/vue/24/solid';
 
   const cartStore = useCartStore();
+  const toastStore = useToastStore()
   const route = useRoute();
   const imageModel = ref({
     status: false,
     image: [],
   });
   const starChecked = ref(0);
-  const toastDisplay = ref({
-    status: false,
-    message: '',
-  });
   const wishlistStatus = ref(false);
 
   const { data: item } = await useFetch('/api/v1/items', {
@@ -378,14 +371,8 @@
       event.target.disabled = false;
 
       if (wishlist?.value.includes(itemId)) {
-        toastDisplay.value = {
-          status: true,
-          message: 'Added to your Wishlist.',
-        };
+        toastStore.showToast("Added to your Wishlist")
         wishlistStatus.value = true;
-        setTimeout(() => {
-          toastDisplay.value.status = false;
-        }, 3000);
       }
     } else {
       event.target.disabled = true;
@@ -399,14 +386,8 @@
       event.target.disabled = false;
 
       if (response?.value.statusCode === 200) {
-        toastDisplay.value = {
-          status: true,
-          message: 'Removed from your Wishlist.',
-        };
+        toastStore.showToast("Removed from your Wishlist.")
         wishlistStatus.value = false;
-        setTimeout(() => {
-          toastDisplay.value.status = false;
-        }, 3000);
       }
     }
   };

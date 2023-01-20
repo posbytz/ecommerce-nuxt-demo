@@ -20,6 +20,15 @@
     </li>
     <li>
       <NuxtLink
+        to="/account/wishlist"
+        class="rounded"
+        :class="{ active: tab === 'wishlist' }"
+      >
+        Wishlist
+      </NuxtLink>
+    </li>
+    <li>
+      <NuxtLink
         to="/account/orders"
         class="rounded"
         :class="{ active: tab === 'orders' }"
@@ -27,8 +36,8 @@
         Orders
       </NuxtLink>
     </li>
-    <li><NuxtLink to="/terms-of-use">Terms Of Use</NuxtLink></li>
-    <li><NuxtLink to="/privacy-policy">Privacy Policy</NuxtLink></li>
+    <!-- <li><NuxtLink to="/terms-of-use">Terms Of Use</NuxtLink></li>
+    <li><NuxtLink to="/privacy-policy">Privacy Policy</NuxtLink></li> -->
   </ul>
 </template>
 

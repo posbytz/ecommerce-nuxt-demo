@@ -12,7 +12,7 @@ export default defineNuxtPlugin(({ $pinia }) => {
         ) {
           const userStore = useUserStore($pinia);
 
-          return userStore.logout('Expired');
+          return userStore.logout();
         }
 
         if (response._data?.data?.errors && validator) {

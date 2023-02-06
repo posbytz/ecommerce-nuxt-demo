@@ -385,6 +385,10 @@
         {
           method: 'DELETE',
           headers: useRequestHeaders(['cookie']),
+          onResponseError: ({ response }) => {
+            const nuxtApp = useNuxtApp();
+            nuxtApp?.$onResponseError(response);
+          },
         }
       );
       event.target.disabled = false;

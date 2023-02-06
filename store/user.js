@@ -63,11 +63,7 @@ export const useUserStore = defineStore('user', {
     },
     async logout(session) {
       await $fetch('/api/logout');
-      if (session !== 'Expired') {
         window.location.reload();
-      } else {
-        window.location.href = '/auth'
-      }
     },
     getAddresses() {
       return $fetch('/api/v1/user/addresses', {

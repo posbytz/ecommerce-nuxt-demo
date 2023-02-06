@@ -8,7 +8,7 @@ export default defineNuxtPlugin(({ $pinia }) => {
         if (
           response.status === 401 &&
           response._data.data.message ===
-            'authorization header missing or invalid'
+          'authorization header missing or invalid'
         ) {
           const userStore = useUserStore($pinia);
 

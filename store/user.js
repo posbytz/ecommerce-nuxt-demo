@@ -61,7 +61,7 @@ export const useUserStore = defineStore('user', {
         },
       });
     },
-    async logout() {
+    async logout(session) {
       await $fetch('/api/logout');
       window.location.reload();
     },

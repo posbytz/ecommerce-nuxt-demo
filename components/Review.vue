@@ -445,7 +445,7 @@
   });
   const emit = defineEmits(['star-event']);
   const userStore = useUserStore();
-  
+
   const starRating = ref([true, false, false, false, false]);
   const individualRating = ref({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 });
   const writeReviewDisplay = ref(false);
@@ -689,6 +689,10 @@
           transform(res) {
             return res.data.results;
           },
+          onResponseError: ({ response }) => {
+            const nuxtApp = useNuxtApp();
+            nuxtApp?.$onResponseError(response);
+          },
         });
 
         let resultReview = response.data.results;
@@ -752,6 +756,10 @@
       transform(response) {
         return response.data;
       },
+      onResponseError: ({ response }) => {
+        const nuxtApp = useNuxtApp();
+        nuxtApp?.$onResponseError(response);
+      },
     });
     if (reviewResult && image.value.length > 0) {
       await awsImageUpload(image.value, reviewResult._id);
@@ -777,6 +785,10 @@
       body: ratingData,
       transform(response) {
         return response.data;
+      },
+      onResponseError: ({ response }) => {
+        const nuxtApp = useNuxtApp();
+        nuxtApp?.$onResponseError(response);
       },
     });
     getReviews();

@@ -139,6 +139,7 @@
             <ShoppingBagIcon class="w-4" /> Add to Cart
           </button>
           <button
+            v-if="userStore.user"
             class="btn btn-outline gap-2"
             @click="(event) => toggleWishlist(item._id, event)"
           >
@@ -202,12 +203,10 @@
 </template>
 
 <script setup>
-  import {
-    ShoppingBagIcon,
-    ArrowRightIcon,
-  } from '@heroicons/vue/24/outline/index.js';
   import { useCartStore } from '@/store/cart';
-  import { useToastStore } from '@/store/toast'
+  import { useToastStore } from '@/store/toast';
+  import { useUserStore } from '@/store/user';
+  import { ShoppingBagIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
   import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -216,7 +215,8 @@
   } from '@heroicons/vue/24/solid';
 
   const cartStore = useCartStore();
-  const toastStore = useToastStore()
+  const toastStore = useToastStore();
+  const userStore = useUserStore();
   const route = useRoute();
   const imageModel = ref({
     status: false,
@@ -367,11 +367,15 @@
         transform(response) {
           return response.data;
         },
+        onResponseError: ({ response }) => {
+          const nuxtApp = useNuxtApp();
+          nuxtApp?.$onResponseError(response);
+        },
       });
       event.target.disabled = false;
 
       if (wishlist?.value.includes(itemId)) {
-        toastStore.showToast("Added to your Wishlist")
+        toastStore.showToast('Added to your Wishlist');
         wishlistStatus.value = true;
       }
     } else {
@@ -381,19 +385,23 @@
         {
           method: 'DELETE',
           headers: useRequestHeaders(['cookie']),
+          onResponseError: ({ response }) => {
+            const nuxtApp = useNuxtApp();
+            nuxtApp?.$onResponseError(response);
+          },
         }
       );
       event.target.disabled = false;
 
       if (response?.value.statusCode === 200) {
-        toastStore.showToast("Removed from your Wishlist.")
+        toastStore.showToast('Removed from your Wishlist.');
         wishlistStatus.value = false;
       }
     }
   };
 
   const { data: wishlistData } = await useFetch('/api/v1/user/wishlist', {
-    headers: useRequestHeaders(['cookie', 'host']),
+    headers: useRequestHeaders(['cookie']),
     transform(response) {
       return response.data;
     },

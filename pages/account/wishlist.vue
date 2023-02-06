@@ -21,7 +21,9 @@
         </div>
         <div v-else class="flex min-h-[calc(100vh-300px)] text-center py-4">
           <div class="m-auto">
-            <h1 class="text-2xl font-medium mt-2 uppercase">YOUR WISHLIST IS EMPTY</h1>
+            <h1 class="text-2xl font-medium mt-2 uppercase">
+              YOUR WISHLIST IS EMPTY
+            </h1>
             <p class="text-slate-400 mb-4">
               Add items that you like to your wishlist.
             </p>
@@ -36,10 +38,18 @@
 </template>
 
 <script setup>
+  definePageMeta({
+    middleware: 'auth',
+  });
+
   const { data: wishlist } = await useFetch('/api/v1/user/wishlist', {
     headers: useRequestHeaders(['cookie', 'host']),
     transform(response) {
       return response.data;
+    },
+    onResponseError: ({ response }) => {
+      const nuxtApp = useNuxtApp();
+      nuxtApp?.$onResponseError(response);
     },
   });
 </script>

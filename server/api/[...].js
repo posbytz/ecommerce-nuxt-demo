@@ -9,7 +9,10 @@ export default defineEventHandler(async (event) => {
   };
   const params = getQuery(event);
   const body = method === 'GET' ? undefined : await readBody(event);
-  headers['x-authenticated-userid'] = config.ecommerceStoreCode
+
+  if (config.nodeEnv === 'development') {
+    headers['x-authenticated-userid'] = config.ecommerceStoreCode;
+  }
 
   try {
     const response = await $fetch(event.node.req.url.replace(/^\/api/, ''), {

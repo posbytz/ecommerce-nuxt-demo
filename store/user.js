@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', {
     },
     async logout(session) {
       await $fetch('/api/logout');
-        window.location.reload();
+      window.location.reload();
     },
     getAddresses() {
       return $fetch('/api/v1/user/addresses', {

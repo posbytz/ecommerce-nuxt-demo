@@ -14,14 +14,14 @@
     "@vueuse/nuxt": "9.6.0",
     "autoprefixer": "^10.4.13",
     "daisyui": "^2.42.1",
-    "nuxt": "3.0.0",
+    "nuxt": "3.1.1",
     "postcss": "^8.4.19",
     "prettier": "^2.8.0",
     "typescript": "^4.9.3",
     "vue-i18n": "^9.2.2"
   },
   "dependencies": {
-    "@heroicons/vue": "^2.0.13",
+    "@heroicons/vue": "^2.0.14",
     "@pinia/nuxt": "^0.4.6",
     "@vueuse/nuxt": "9.6.0",
     "aws-sdk": "^2.1269.0",

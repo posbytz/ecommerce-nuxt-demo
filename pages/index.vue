@@ -2,6 +2,7 @@
   <div>
     <div class="carousel h-96 bg-slate-200">
       <div
+        v-if="storeStore.settings.store?.banners"
         v-for="(banner, i) in storeStore.settings.store?.banners"
         :id="`slide-${i + 1}`"
         class="carousel-item w-full"

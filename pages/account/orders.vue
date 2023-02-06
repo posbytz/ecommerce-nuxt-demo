@@ -252,12 +252,16 @@
   const { data: orders, refresh: refreshOrders } = await useFetch(
     '/api/v1/orders',
     {
-      headers: useRequestHeaders(['cookie']),
+      headers: useRequestHeaders(['cookie', 'host']),
       onRequest({ request, options }) {
         options.params = { ...route.query };
       },
       transform(response) {
         return response.data;
+      },
+      onResponseError: ({ response }) => {
+        const nuxtApp = useNuxtApp();
+        nuxtApp?.$onResponseError(response);
       },
     }
   );
@@ -289,5 +293,5 @@
   let closeOrderModal = () => {
     isOrderModal.value = false;
   };
-
+  
 </script>

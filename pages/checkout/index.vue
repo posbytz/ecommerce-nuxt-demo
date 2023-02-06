@@ -50,7 +50,7 @@
           >
             <div class="avatar">
               <div class="w-32">
-                <img :src="cartItem?.image" :alt="`Product-${index+1}`" />
+                <img :src="cartItem?.image" :alt="`Product-${index + 1}`" />
               </div>
             </div>
             <div class="card-body justify-between p-4">
@@ -244,8 +244,10 @@
         <p class="text-slate-400 mb-4">
           There is nothing in your cart. Let's add some items
         </p>
-        <NuxtLink to="/account/wishlist" class="btn btn-outline btn-primary"
-          >Add items from wishlist
+        <NuxtLink
+          :to="userStore.user ? '/account/wishlist' : '/'"
+          class="btn btn-outline btn-primary"
+          >{{ userStore.user ? 'Add items from wishlist' : 'Add items' }}
         </NuxtLink>
       </div>
     </div>
@@ -295,7 +297,18 @@
           <a href="#" class="btn btn-ghost text-error" @click="removeItem"
             >Remove</a
           >
-          <a href="#" class="btn btn-ghost text-primary">Move to Wishlist</a>
+          <NuxtLink v-if="itemToRemove" :to="!userStore.user ? '/auth' : null"
+            ><button class="btn btn-ghost text-primary" @click="moveToWishlist">
+              Move to Wishlist
+            </button></NuxtLink
+          >
+          <button
+            v-else
+            class="btn btn-ghost text-primary"
+            @click="removeItemModal"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -429,5 +442,32 @@
         actionButtonRef.value.disabled = false;
       }
     }
+  };
+
+  const moveToWishlist = async () => {
+    if (itemToRemove.value) {
+      let { data: wishlist } = await useFetch('/api/v1/user/wishlist', {
+        method: 'POST',
+        headers: useRequestHeaders(['cookie']),
+        body: {
+          itemId: itemToRemove.value.variation?._id,
+        },
+        transform(response) {
+          return response.data;
+        },
+        onResponseError: ({ response }) => {
+          const nuxtApp = useNuxtApp();
+          nuxtApp?.$onResponseError(response);
+        },
+      });
+      if (wishlist.value?.includes(itemToRemove.value.variation?._id)) {
+        cartStore.removeItem(itemToRemove.value._id);
+        removeItemModalCloseRef.value?.click();
+      }
+    }
+  };
+
+  const removeItemModal = () => {
+    removeItemModalCloseRef.value?.click();
   };
 </script>

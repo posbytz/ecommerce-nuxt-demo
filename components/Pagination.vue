@@ -57,10 +57,7 @@
 </template>
 
 <script setup>
-  import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-  } from '@heroicons/vue/24/outline/index.js';
+  import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 
   const props = defineProps({
     options: {

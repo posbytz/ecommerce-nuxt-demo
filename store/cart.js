@@ -23,6 +23,10 @@ export const useCartStore = defineStore('cart', {
         transform(response) {
           return response.data;
         },
+        onResponseError: ({ response }) => {
+          const nuxtApp = useNuxtApp();
+          nuxtApp?.$onResponseError(response);
+        },
       });
 
       this.$patch({ cart: response.data });
@@ -43,7 +47,7 @@ export const useCartStore = defineStore('cart', {
       this.$patch({ cart: response.data });
     },
     async delete() {
-     await $fetch('/api/v1/carts', {
+      await $fetch('/api/v1/carts', {
         method: 'DELETE',
         headers: useRequestHeaders(['cookie']),
         params: {

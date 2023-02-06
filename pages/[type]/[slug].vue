@@ -23,7 +23,8 @@
       </h1>
       <p class="inline text-slate-500">
         <span class="mx-2">-</span
-        >{{ category ? category.itemsCount : brand?.pagination.totalResults }} Items
+        >{{ category ? category.itemsCount : brand?.pagination.totalResults }}
+        Items
       </p>
     </div>
     <div class="flex justify-between items-center mb-3">
@@ -80,7 +81,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.brand.length && type !== 'brand'">
+        <template v-if="items?.filters.brand.length && type !== 'brand'">
           <p class="font-medium mb-2">Brand</p>
           <div
             v-for="(brand, i) in items.filters.brand"
@@ -104,7 +105,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.price.length">
+        <template v-if="items?.filters.price.length">
           <p class="font-medium mb-2">Price</p>
           <div
             v-for="(priceRange, i) in items.filters.price"
@@ -133,7 +134,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.color.length">
+        <template v-if="items?.filters.color.length">
           <p class="font-medium mb-2">Color</p>
           <div
             v-for="(color, i) in items.filters.color"
@@ -157,7 +158,7 @@
           </div>
           <div class="divider my-2" />
         </template>
-        <template v-if="items.filters.size.length">
+        <template v-if="items?.filters.size.length">
           <p class="font-medium mb-2">Size</p>
           <div
             v-for="(size, i) in items.filters.size"
@@ -207,7 +208,7 @@
     }));
 
   const { data: brand } =
-  type === 'brand' &&
+    type === 'brand' &&
     (await useFetch('/api/v1/brands', {
       headers: useRequestHeaders(['cookie']),
       query: { slug: [slug] },

@@ -6,10 +6,10 @@ export default defineEventHandler(async (event) => {
     !event.node.req.url.startsWith('/__nuxt_error')
   ) {
     if (
-      !event.node.req.session.apiAccessToken ||
-      event.node.req.session.apiAccessToken.created_at +
-        event.node.req.session.apiAccessToken.expires_in * 1000 >=
-        Date.now()
+      !event.node.req.session.apiAccessToken || (
+        Date.now() >= event.node.req.session.apiAccessToken.created_at +
+        event.node.req.session.apiAccessToken.expires_in * 1000
+      )
     ) {
       try {
         const response = await $fetch('/oauth2/token', {

@@ -22,8 +22,7 @@
         {{ category ? category.name : brand?.results[0].name }}
       </h1>
       <p class="inline text-slate-500">
-        <span class="mx-2">-</span
-        >{{ category ? category.itemsCount : brand?.pagination.totalResults }}
+        <span class="mx-2">-</span>{{ items?.pagination.totalResults || 0 }}
         Items
       </p>
     </div>

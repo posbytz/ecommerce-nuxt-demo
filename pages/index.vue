@@ -36,15 +36,15 @@
           </NuxtLink>
         </div>
       </template>
-      <template v-if="categories?.length">
+      <template v-if="categories?.results.length">
         <div class="divider mb-8">
           <h3 class="text-3xl">Shop by Category</h3>
         </div>
         <div class="grid grid-cols-5">
           <NuxtLink
-            v-for="category in categories"
+            v-for="category in categories.results"
             :to="`/categories/${category.slug}`"
-            class="indicator cursor-pointer"
+            class="indicator cursor-pointer pb-5"
           >
             <div
               class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl"
@@ -65,6 +65,15 @@
           </NuxtLink>
         </div>
       </template>
+      <div class="text-end mx-12">
+        <button
+          v-if="categoryCount < categories?.pagination.totalResults"
+          @click="loadMoreCategories"
+          class="mt-3 px-8 py-2 bg-rose-500 text-white duration-300 hover:bg-rose-700 rounded"
+        >
+          Load more
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -73,12 +82,14 @@
   import { useStoreStore } from '@/store/store';
 
   const storeStore = useStoreStore();
+  const categoryCount = ref(20);
   let bannerScrollTimer = null;
 
   const { data: categories } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie', 'host']),
+    query: { limit: categoryCount },
     transform: (response) => {
-      return response.data.results;
+      return response.data;
     },
   });
 
@@ -113,5 +124,11 @@
         index++;
       }
     }, 5000);
+  };
+
+  const loadMoreCategories = async () => {
+    if (categoryCount.value < categories.value?.pagination.totalResults) {
+      categoryCount.value += 20;
+    }
   };
 </script>

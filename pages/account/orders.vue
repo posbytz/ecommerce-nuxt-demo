@@ -178,32 +178,37 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-            <div class="divider divider-horizonal"></div>
             <div class="flex justify-between">
               <div>Subtotal</div>
               <div class="px-2">
                 {{ $n(orderDetails?.bill.subtotal || 0, 'currency', 'en-US') }}
               </div>
             </div>
-            <div class="flex justify-between">
+            <div v-if="orderDetails?.bill.tax" class="flex justify-between">
               <div>Tax</div>
               <div class="px-2">
                 {{ $n(orderDetails?.bill.tax || 0, 'currency', 'en-US') }}
               </div>
             </div>
-            <div class="flex justify-between">
+            <div
+              v-if="orderDetails?.bill.discount"
+              class="flex justify-between"
+            >
               <div>Discount</div>
               <div class="px-2">
                 {{ $n(orderDetails?.bill.discount || 0, 'currency', 'en-US') }}
               </div>
             </div>
-            <div class="flex justify-between">
+            <div v-if="orderDetails?.bill.charge" class="flex justify-between">
               <div>Charges</div>
               <div class="px-2">
                 {{ $n(orderDetails?.bill.charge || 0, 'currency', 'en-US') }}
               </div>
             </div>
-            <div class="flex justify-between">
+            <div
+              v-if="orderDetails?.bill.roundOff"
+              class="flex justify-between"
+            >
               <div>Round Off</div>
               <div class="px-2">
                 {{ $n(orderDetails?.bill.roundOff || 0, 'currency', 'en-US') }}
@@ -293,5 +298,5 @@
   let closeOrderModal = () => {
     isOrderModal.value = false;
   };
-  
+
 </script>

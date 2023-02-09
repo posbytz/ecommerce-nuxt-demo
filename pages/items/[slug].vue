@@ -400,16 +400,18 @@
     }
   };
 
-  const { data: wishlistData } = await useFetch('/api/v1/user/wishlist', {
-    headers: useRequestHeaders(['cookie']),
-    transform(response) {
-      return response.data;
-    },
-  });
+  if (userStore.user) {
+    const { data: wishlistData } = await useFetch('/api/v1/user/wishlist', {
+      headers: useRequestHeaders(['cookie']),
+      transform(response) {
+        return response.data;
+      },
+    });
 
-  if (wishlistData.value?.results.length) {
-    let wishListArray = wishlistData.value.results.map((e) => e._id);
-    wishlistStatus.value = wishListArray.includes(item.value._id);
+    if (wishlistData.value?.results.length) {
+      let wishListArray = wishlistData.value.results.map((e) => e._id);
+      wishlistStatus.value = wishListArray.includes(item.value._id);
+    }
   }
 </script>
 

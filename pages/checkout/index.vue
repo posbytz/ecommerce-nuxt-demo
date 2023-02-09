@@ -189,12 +189,12 @@
       </div>
       <div class="divider divider-horizontal m-0" />
       <div class="w-2/6 p-3">
-        <ul class="menu border mb-4">
+        <!-- <ul class="menu border mb-4">
           <li>
             <a> <TagIcon class="w-5" />Apply Coupon </a>
           </li>
-        </ul>
-        <p class="font-medium mb-2">
+        </ul> -->
+        <p class="font-medium my-2">
           Price Details ({{ cartStore.cart.items.length }} Items)
         </p>
         <p class="flex justify-between font-light">
@@ -457,7 +457,7 @@
   };
 
   const moveToWishlist = async () => {
-    if (itemToRemove.value) {
+    if (itemToRemove.value && userStore.user) {
       let { data: wishlist } = await useFetch('/api/v1/user/wishlist', {
         method: 'POST',
         headers: useRequestHeaders(['cookie']),

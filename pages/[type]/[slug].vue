@@ -185,7 +185,9 @@
         <div class="grid grid-cols-4 gap-x-4 gap-y-8">
           <ItemCard v-for="item in items.results" :key="item.id" :item="item" />
         </div>
-        <Pagination :options="items.pagination" @change="refreshItems" />
+        <div class="text-right">
+          <Pagination :options="items.pagination" @change="refreshItems" />
+        </div>
       </div>
     </div>
   </div>
@@ -221,12 +223,13 @@
     {
       headers: useRequestHeaders(['cookie']),
       onRequest({ request, options }) {
-        if (type === 'brand') {
+        if (type === 'brand' && brand.value) {
           options.params = {
             brandId: brand?.value.results[0]._id,
             ...route.query,
           };
-        } else {
+        }
+        if (type === 'categories' && category.value) {
           options.params = {
             categoryId: category?.value._id,
             ...route.query,

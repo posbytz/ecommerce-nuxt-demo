@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5">
+  <div v-if="item" class="p-5">
     <div class="breadcrumbs text-sm py-0 mb-4">
       <ul>
         <li>
@@ -93,6 +93,12 @@
           </small>
         </div>
         <div
+          v-if="!item?.inventory.available"
+          class="text-red-500 text-sm mb-2 font-medium"
+        >
+          Out of stock
+        </div>
+        <div
           v-for="attributeGroup in item.attributesGroup"
           :key="attributeGroup.slug"
           class="mb-3"
@@ -121,7 +127,7 @@
             </label>
           </div>
         </div>
-        <div class="flex items-center">
+        <div v-if="item?.inventory.available" class="flex items-center">
           <NuxtLink
             v-if="cartItem"
             class="btn btn-primary gap-2 mr-3"
@@ -198,6 +204,12 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div v-else class="h-80 flex justify-center items-center">
+    <div>
+      <div class="text-2xl text-center font-medium p-2">No Items Found</div>
+      <p class="p-2">We can't find any item matching your search</p>
     </div>
   </div>
 </template>

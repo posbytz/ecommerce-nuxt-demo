@@ -3,12 +3,12 @@
     <h1 class="text-2xl mb-4">Your Account</h1>
     <div class="flex border-t">
       <div
-        class="w-1/5 sticky top-16 overflow-auto border-r py-3"
+        class="max-lg:hidden w-1/5 sticky top-16 overflow-auto border-r py-3"
         style="max-height: calc(100vh - 64px)"
       >
         <AccountMenu />
       </div>
-      <div v-if="orders" class="w-4/5 py-5 pl-5">
+      <div v-if="orders" class="w-full lg:w-4/5 py-5 lg:pl-5">
         <p class="text-xl mb-4">Orders</p>
         <div
           v-for="(order, i) in orders.results"
@@ -19,8 +19,10 @@
         >
           <div class="card-body capitalize p-4">
             <div class="flex items-center justify-between mb-4">
-              <div>
-                <p>Order ID # {{ order._id }}</p>
+              <div class="max-md:flex-col">
+                <p>
+                  Order ID # <span class="max-md:text-xs">{{ order._id }}</span>
+                </p>
                 <p class="text-sm text-slate-500">
                   {{
                     new Date(order.createdAt).toLocaleDateString('en-IN', {
@@ -33,7 +35,7 @@
                 </p>
               </div>
               <div
-                class="badge border-0 text-white"
+                class="badge border-0 text-white max-md:mb-12 max-md:text-xs"
                 :class="
                   order.status === 'complete' ? 'bg-green-600' : 'bg-orange-400'
                 "
@@ -96,7 +98,9 @@
           class="modal"
           :class="isOrderModal ? 'modal-open' : null"
         >
-          <div class="modal-box w-6/12 max-w-5xl h-4/5 relative">
+          <div
+            class="modal-box w-11/12 lg:w-6/12 max-w-5xl h-4/5 relative max-md:p-4"
+          >
             <label
               class="btn btn-sm btn-circle absolute right-2 top-2"
               @click="closeOrderModal"
@@ -114,9 +118,9 @@
             </div>
             <div class="divider divider-horizonal"></div>
 
-            <div class="flex justify-between">
+            <div class="flex flex-col lg:flex-row max-lg:mb-2 justify-between">
               <div class="">
-                <div class="text-gray-400 font-medium text-lg">Order #</div>
+                <div class="text-gray-400 font-medium lg:text-lg">Order #</div>
                 <div class="font-medium text-lg">{{ orderDetails?._id }}</div>
               </div>
               <div class="">
@@ -136,7 +140,7 @@
               <div class="text-gray-400 font-medium text-lg">
                 Delivery Address:
               </div>
-              <div class="w-5/6">
+              <div class="w-full lg:w-5/6">
                 {{
                   [
                     orderDetails?.shippingAddress.line,
@@ -150,13 +154,13 @@
               </div>
             </div>
             <div class="divider divider-horizonal"></div>
-            <div class="flex">
-              <div class="w-8/12">
+            <div class="flex max-lg:w-full">
+              <div class="w-7/12 lg:w-8/12">
                 <div class="text-gray-400 font-medium text-lg pb-2">
                   Product Info
                 </div>
               </div>
-              <div class="w-4/12 flex justify-between">
+              <div class="w-6/12 lg:w-4/12 flex justify-between">
                 <div class="text-gray-400 font-medium text-lg pb-2">
                   Quantity
                 </div>
@@ -165,11 +169,11 @@
                 </div>
               </div>
             </div>
-            <div v-for="item in orderDetails?.items" class="flex">
-              <div class="w-8/12">
+            <div v-for="item in orderDetails?.items" class="flex max-lg:w-full">
+              <div class="w-6/12 lg:w-8/12">
                 <div>{{ item.name }}</div>
               </div>
-              <div class="flex justify-between w-4/12">
+              <div class="flex justify-between w-6/12 lg:w-4/12 max-lg:pl-5">
                 <div>{{ item.quantity }}</div>
 
                 <div class="px-2">
@@ -298,5 +302,4 @@
   let closeOrderModal = () => {
     isOrderModal.value = false;
   };
-
 </script>

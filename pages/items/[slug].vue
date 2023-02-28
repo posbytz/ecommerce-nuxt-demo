@@ -1,6 +1,6 @@
 <template>
   <div v-if="item" class="p-5">
-    <div class="breadcrumbs text-sm py-0 mb-4">
+    <div class="breadcrumbs text-sm py-0 mb-4 overflow-x-hidden">
       <ul>
         <li>
           <NuxtLink href="/">Home</NuxtLink>
@@ -21,8 +21,8 @@
         <li>{{ item.name }}</li>
       </ul>
     </div>
-    <div class="flex">
-      <div class="w-1/2">
+    <div class="flex-none md:flex">
+      <div class="max-md:hidden w-1/2">
         <div class="grid grid-cols-2 gap-5">
           <div
             v-for="(image, index) in item.images"
@@ -38,7 +38,7 @@
         </div>
       </div>
       <div class="divider divider-horizontal" />
-      <div class="w-1/2">
+      <div class="w-full md:w-1/2">
         <h1 class="text-2xl font-medium">
           {{ item.name }}
         </h1>
@@ -71,6 +71,32 @@
           />
         </div>
         <div class="divider mt-0 mb-2" />
+        <div class="md:hidden">
+          <div class="carousel w-full">
+            <div
+              v-for="(image, index) in item.images"
+              :id="'item' + index"
+              class="carousel-item w-full"
+            >
+              <img
+                :src="image"
+                class="w-full"
+                @touchstart.passive="(e) => dragImage(e, 'START', index)"
+                @touchend="(e) => dragImage(e, 'END', index)"
+              />
+            </div>
+          </div>
+          <div class="flex justify-center w-full py-2 gap-2">
+            <a
+              v-for="(image, index) in item.images"
+              :href="'#item' + index"
+              class="w-2 h-2 rounded-full"
+              :class="activeImage === index ? 'bg-slate-700' : 'bg-slate-500'"
+              @click="() => slideImage(index)"
+            ></a>
+          </div>
+          <div class="divider mt-0 mb-2" />
+        </div>
         <div class="mb-3">
           <p class="text-xl leading-none">
             <span class="font-medium">{{
@@ -158,7 +184,7 @@
         <div class="divider mt-3 mb-1" />
         <div v-if="item.description" class="my-3">
           <p class="text-xl font-medium mb-2">Product Details</p>
-          <p class="w-4/5">{{ item.description }}</p>
+          <p class="w-full lg:w-4/5">{{ item.description }}</p>
         </div>
         <Review :itemId="item._id" @star-event="starCheckedStatus"></Review>
         <div class="modal" :class="imageModel.status ? 'modal-open' : null">
@@ -236,6 +262,9 @@
   });
   const starChecked = ref(0);
   const wishlistStatus = ref(false);
+  const activeImage = ref(0);
+  let dragStart;
+  let dragEnd;
 
   const { data: item } = await useFetch('/api/v1/items', {
     headers: useRequestHeaders(['cookie', 'host']),
@@ -425,6 +454,28 @@
       wishlistStatus.value = wishListArray.includes(item.value._id);
     }
   }
+
+  const slideImage = (index) => {
+    activeImage.value = index;
+  };
+
+  const dragImage = (event, status, index) => {
+    if (event.changedTouches.length !== 1) {
+      return;
+    }
+    if (status === 'START') {
+      dragStart = event.changedTouches[0].clientX;
+    }
+    if (status === 'END') {
+      dragEnd = event.changedTouches[0].clientX;
+    }
+    if (dragStart > dragEnd) {
+      slideImage(index + 1);
+    }
+    if (dragEnd > dragStart) {
+      slideImage(index - 1);
+    }
+  };
 </script>
 
 <style scoped>

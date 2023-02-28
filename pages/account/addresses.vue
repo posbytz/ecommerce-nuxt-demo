@@ -3,12 +3,12 @@
     <h1 class="text-2xl mb-4">Your Account</h1>
     <div class="flex border-t">
       <div
-        class="w-1/5 sticky top-16 overflow-auto border-r py-3"
+        class="max-lg:hidden w-1/5 sticky top-16 overflow-auto border-r py-3"
         style="max-height: calc(100vh - 64px)"
       >
         <AccountMenu />
       </div>
-      <div class="w-4/5 py-5 pl-5">
+      <div class="w-full lg:w-4/5 py-5 lg:pl-5">
         <div class="flex items-center justify-between mb-4">
           <p class="text-xl">Addresses</p>
           <label for="address-modal" class="btn btn-sm btn-outline btn-primary">

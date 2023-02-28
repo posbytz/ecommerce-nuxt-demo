@@ -1,19 +1,18 @@
 <template>
-<Head>
-  <Link rel='icon' :href="store?.favicon" />
-</Head>
+  <Head>
+    <Link rel="icon" :href="store?.favicon" />
+  </Head>
   <div>
     <Navbar />
     <slot />
+    <SearchModal />
     <Toast></Toast>
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { useStoreStore } from '../store/store'
+  import { useStoreStore } from '../store/store';
 
-const store = useStoreStore()
+  const store = useStoreStore();
 </script>
-
-

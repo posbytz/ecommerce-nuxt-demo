@@ -1,7 +1,7 @@
 <template>
   <input input-sm type="checkbox" id="address-modal" class="modal-toggle" />
   <div class="modal">
-    <div class="modal-box max-w-2xl">
+    <div class="modal-box max-w-2xl max-lg:p-5">
       <div class="flex justify-between">
         <h3 class="text-xl font-medium">
           {{ props.address ? 'Edit' : 'Add New' }} Address
@@ -23,7 +23,7 @@
               <label class="label">
                 <span class="label-text">Name *</span>
               </label>
-              <Field v-model="name" v-slot="{ field }" name="name" >
+              <Field v-model="name" v-slot="{ field }" name="name">
                 <input
                   v-bind="field"
                   type="text"

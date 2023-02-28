@@ -1,21 +1,23 @@
 <template>
   <div class="px-5 pt-5">
     <h1 class="text-2xl mb-4">Your Account</h1>
-    <div class="flex border-t">
+    <div class="flex flex-col lg:flex-row border-t">
       <div
-        class="w-1/5 sticky top-16 overflow-auto border-r py-3"
+        class="max-lg:hidden w-1/5 sticky top-16 overflow-auto border-r py-3"
         style="max-height: calc(100vh - 64px)"
       >
         <AccountMenu />
       </div>
-      <div v-if="userStore.user" class="w-4/5 py-5 pl-5">
+      <div v-if="userStore.user" class="w-full lg:w-4/5 py-5 lg:pl-5">
         <p class="text-xl mb-4">Profile</p>
         <Form
           ref="profileForm"
           as="div"
           :validation-schema="profileFormValidationSchema"
         >
-          <div class="grid grid-cols-3 gap-3 mb-3">
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3"
+          >
             <div class="form-control">
               <label class="label">
                 <span class="label-text">Name</span>
@@ -75,7 +77,7 @@
               <ErrorMessage name="gender" class="text-xs text-error p-1" />
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-3 mb-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
             <div class="form-control">
               <label class="label justify-between">
                 <span class="label-text">Email</span>

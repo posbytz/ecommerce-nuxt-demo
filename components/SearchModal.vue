@@ -1,11 +1,11 @@
 <template>
-  <div class="modal" :class="modal.searchModal ? 'modal-open' : ''">
+  <div class="modal" :class="props.visible ? 'modal-open' : ''">
     <div class="modal-box w-full md:min-w-full min-h-full rounded-none">
-      <Search></Search>
+      <Search @toggleSearch="emit('toggleSearch', false)"></Search>
       <div class="btm-nav">
         <button
           class="bg-error font-semibold uppercase text-lg"
-          @click="modal.hideSearchToast"
+          @click="emit('toggleSearch', false)"
         >
           <span class="btm-nav-label">Cancel</span>
         </button>
@@ -15,7 +15,11 @@
 </template>
 
 <script setup>
-  import { useModalStore } from '../store/modal';
-
-  const modal = useModalStore();
+  const emit = defineEmits(['toggleSearch']);
+  const props = defineProps({
+    visible: {
+      type: Boolean,
+      required: false,
+    },
+  });
 </script>

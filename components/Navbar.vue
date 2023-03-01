@@ -106,7 +106,7 @@
     <div class="lg:flex-none max-lg:navbar-end">
       <div
         class="lg:hidden btn btn-ghost btn-circle"
-        @click="modal.showSearchToast"
+        @click="emit('toggleSearch', true)"
       >
         <MagnifyingGlassIcon class="w-5" />
       </div>
@@ -174,7 +174,6 @@
     UserCircleIcon,
   } from '@heroicons/vue/24/outline';
   import { useStoreStore } from '@/store/store';
-  import { useModalStore } from '@/store/modal';
   import { useCartStore } from '@/store/cart';
   import { useUserStore } from '@/store/user';
 
@@ -182,8 +181,8 @@
   const storeStore = useStoreStore();
   const cartStore = useCartStore();
   const userStore = useUserStore();
-  const modal = useModalStore();
   const dropdownRef = ref(null);
+  const emit = defineEmits(['toggleSearch']);
 
   const { data: categories } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie', 'host']),

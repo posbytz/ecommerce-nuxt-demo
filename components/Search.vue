@@ -16,7 +16,7 @@
           searchResult.categories?.length > 0 || searchResult.items?.length > 0
         "
         class="absolute dropdown dropdown-open left-0 right-0 top-12 lg:top-9"
-        @click="modal.hideSearchToast"
+        @click="emit('toggleSearch')"
       >
         <ul
           tabindex="0"
@@ -51,12 +51,11 @@
 <script setup>
   import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
   import { useDebounceFn } from '@vueuse/core';
-  import { useModalStore } from '../store/modal';
 
   const searchInput = ref(null);
   const searchResult = ref({});
   const router = useRouter();
-  const modal = useModalStore();
+  const emit = defineEmits(['toggleSearch']);
 
   const search = useDebounceFn(async (event) => {
     const q = event.target.value;

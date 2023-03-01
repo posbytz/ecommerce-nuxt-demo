@@ -1,14 +1,48 @@
 <template>
   <div
-    class="navbar sticky top-0 bg-base-100 bg-opacity-70 backdrop-blur shadow-md px-5 z-10"
+    class="navbar sticky top-0 bg-base-100 bg-opacity-70 backdrop-blur shadow-md lg:px-5 z-10 max-lg:w-full lg:justify-between"
   >
-    <div class="flex-none">
+    <div class="max-lg:navbar-start flex-none">
+      <div class="dropdown">
+        <label tabindex="0" class="btn btn-ghost lg:hidden px-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            @click="showDropdown"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h8m-8 6h16"
+            />
+          </svg>
+        </label>
+        <ul
+          tabindex="0"
+          class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+          ref="dropdownRef"
+        >
+          <li
+            v-for="(category, i) in categories?.slice(0, 6)"
+            :key="i"
+            @click="closeDropdown"
+          >
+            <NuxtLink :to="`/categories/${category.slug}`" class="">
+              {{ category.name }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
       <div class="avatar mr-2">
-        <NuxtLink to="/" class="w-12 rounded">
+        <NuxtLink to="/" class="w-8 lg:w-12 rounded">
           <img :src="storeStore.logo" :alt="storeStore.brandName" />
         </NuxtLink>
       </div>
-      <div class="tabs">
+      <div class="hidden lg:tabs">
         <div
           v-for="(category, i) in categories?.slice(0, 6)"
           :key="i"
@@ -68,54 +102,14 @@
         </div>
       </div>
     </div>
-    <div class="grow px-4">
-      <div class="relative form-control w-full">
-        <MagnifyingGlassIcon
-          class="absolute h-4 w-4 top-2 left-2 text-slate-500"
-        />
-        <input
-          ref="searchInput"
-          type="search"
-          placeholder="Search for products, brands and more"
-          class="input input-sm bg-base-200 focus:bg-base-100 pl-8"
-          @input="search"
-        />
-        <div
-          v-if="
-            searchResult.categories?.length > 0 ||
-            searchResult.items?.length > 0
-          "
-          class="absolute dropdown dropdown-open left-0 right-0 top-9"
-        >
-          <ul
-            tabindex="0"
-            class="dropdown-content menu p-2 shadow bg-base-100 w-full"
-          >
-            <template v-if="searchResult.categories?.length">
-              <li class="menu-title">
-                <span>Categories</span>
-              </li>
-              <li v-for="category in searchResult.categories">
-                <a @click="onClickSearchResult(`/categories/${category.slug}`)">
-                  {{ category.name }}
-                </a>
-              </li>
-            </template>
-            <template v-if="searchResult.items?.length">
-              <li class="menu-title">
-                <span>Items</span>
-              </li>
-              <li v-for="item in searchResult.items">
-                <a @click="onClickSearchResult(`/items/${item.slug}`)">
-                  {{ item.name }}
-                </a>
-              </li>
-            </template>
-          </ul>
-        </div>
+    <Search class="max-lg:hidden"></Search>
+    <div class="lg:flex-none max-lg:navbar-end">
+      <div
+        class="lg:hidden btn btn-ghost btn-circle"
+        @click="emit('toggleSearch', true)"
+      >
+        <MagnifyingGlassIcon class="w-5" />
       </div>
-    </div>
-    <div class="flex-none">
       <NuxtLink to="/checkout" class="btn btn-ghost btn-circle">
         <div class="indicator">
           <ShoppingCartIcon class="w-5" />
@@ -180,42 +174,27 @@
     UserCircleIcon,
   } from '@heroicons/vue/24/outline';
   import { useStoreStore } from '@/store/store';
-  import { useDebounceFn } from '@vueuse/core';
   import { useCartStore } from '@/store/cart';
   import { useUserStore } from '@/store/user';
 
-  const router = useRouter();
   const gridColsLength = 4;
   const storeStore = useStoreStore();
   const cartStore = useCartStore();
   const userStore = useUserStore();
+  const dropdownRef = ref(null);
+  const emit = defineEmits(['toggleSearch']);
+
   const { data: categories } = await useFetch('/api/v1/categories', {
     headers: useRequestHeaders(['cookie', 'host']),
     transform: (response) => {
       return response.data.results;
     },
   });
-  const searchInput = ref(null);
-  const searchResult = ref({});
 
-  const search = useDebounceFn(async (event) => {
-    const q = event.target.value;
-
-    if (q) {
-      const response = await $fetch('/api/v1/search', {
-        headers: useRequestHeaders(['cookie']),
-        params: { q },
-      });
-
-      searchResult.value = response.data;
-    } else {
-      searchResult.value = {};
-    }
-  }, 500);
-
-  const onClickSearchResult = (url) => {
-    searchInput.value.value = '';
-    searchResult.value = {};
-    router.push(url);
+  const closeDropdown = () => {
+    dropdownRef.value.classList.add('hidden');
+  };
+  const showDropdown = () => {
+    dropdownRef.value.classList.remove('hidden');
   };
 </script>

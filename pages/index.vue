@@ -1,26 +1,28 @@
 <template>
   <div>
-    <div class="carousel h-96 bg-slate-200">
+    <div class="carousel bg-slate-200">
       <div
         v-if="storeStore.settings.store?.banners"
         v-for="(banner, i) in storeStore.settings.store?.banners"
         :id="`slide-${i + 1}`"
         class="carousel-item w-full"
       >
-        <img :src="banner.file_path" :alt="banner.name" class="w-full" />
+        <img :src="banner.file_path" :alt="banner.name" class="w-full h-full" />
       </div>
     </div>
-    <div class="p-5">
+    <div>
       <template v-if="brands?.length">
-        <div class="divider">
-          <h3 class="text-3xl">Explore Crush-worthy Brands</h3>
+        <div class="divider mt-8 md:mt-10">
+          <h3 class="text-xl lg:text-3xl">Explore Crush-worthy Brands</h3>
         </div>
-        <div class="grid grid-cols-5 my-10">
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 place-items-center mt-8 md:mt-10"
+        >
           <NuxtLink v-for="brand in brands" :to="`/brand/${brand.slug}`">
             <div
-              class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl"
+              class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl mb-8 max-md:w-72"
             >
-              <figure class="h-48">
+              <figure class="h-48 max-md:h-64">
                 <img
                   :src="brand.logoUrl"
                   :alt="brand.name"
@@ -28,7 +30,9 @@
                 />
               </figure>
               <div class="card-body">
-                <p class="text-lg font-medium text-center leading-none">
+                <p
+                  class="text-2xl md:text-lg font-medium text-center leading-none"
+                >
                   {{ brand.name }}
                 </p>
               </div>
@@ -37,19 +41,21 @@
         </div>
       </template>
       <template v-if="categories?.results.length">
-        <div class="divider mb-8">
-          <h3 class="text-3xl">Shop by Category</h3>
+        <div class="divider mb-8 mt-2">
+          <h3 class="text-xl lg:text-3xl">Shop by Category</h3>
         </div>
-        <div class="grid grid-cols-5">
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 place-items-center"
+        >
           <NuxtLink
             v-for="category in categories.results"
             :to="`/categories/${category.slug}`"
             class="indicator cursor-pointer pb-5"
           >
             <div
-              class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl"
+              class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl max-md:w-72"
             >
-              <figure class="h-48">
+              <figure class="h-48 max-md:h-64">
                 <img
                   :src="category.images[0]"
                   :alt="category.name"
@@ -57,7 +63,9 @@
                 />
               </figure>
               <div class="card-body">
-                <p class="text-lg font-medium text-center leading-none">
+                <p
+                  class="text-2xl md:text-lg font-medium text-center leading-none"
+                >
                   {{ category.name }}
                 </p>
               </div>

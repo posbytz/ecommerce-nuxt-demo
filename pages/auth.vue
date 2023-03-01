@@ -1,12 +1,12 @@
 <template>
-  <div class="flex min-h-[calc(100vh-64px)]">
+  <div class="flex min-h-[60vh] lg:min-h-[calc(100vh-64px)]">
     <div class="m-auto">
-      <div class="card w-96 border m-6 shadow-2xl">
+      <div class="card w-11/12 lg:w-96 border m-auto lg:m-6 shadow-2xl">
         <Form
           v-if="!showOtpVerification"
           ref="authForm"
           as="div"
-          class="card-body"
+          class="card-body max-lg:p-6"
           :validation-schema="validationSchema"
         >
           <h3 class="text-xl font-medium">Login or Signup</h3>

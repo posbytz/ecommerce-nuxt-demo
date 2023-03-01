@@ -4,7 +4,9 @@
     <StarIcon class="w-6"></StarIcon>
   </div>
   <div class="modal" :class="imageModel.status ? 'modal-open' : null">
-    <div class="modal-box w-6/12 max-w-5xl bg-gray-800 self-center flex">
+    <div
+      class="modal-box w-11/12 md:w-6/12 max-w-5xl bg-gray-800 self-center flex"
+    >
       <div class="w-1/5 flex items-center">
         <ChevronLeftIcon
           class="w-10 h-10 text-white"
@@ -42,18 +44,18 @@
     </div>
   </div>
   <div v-if="totalReview.rating" class="flex items-center">
-    <div class="w-1/5">
+    <div class="w-4/12 lg:w-1/5">
       <div class="flex">
         <p class="text-5xl font-normal">{{ totalReview.rating }}</p>
         <StarIcon class="w-6 text-green-700"></StarIcon>
       </div>
       <div class="py-2">{{ totalReview.ratingCount }} reviews</div>
     </div>
-    <div class="border-r h-36 mr-5"></div>
-    <div class="w-3/5">
+    <div class="border-r h-36 lg:mr-5 bg-blue-400"></div>
+    <div class="w-8/12 lg:w-3/5">
       <div class="mx-auto bg-white rounded-lg max-w-sm">
         <div class="mb-1 tracking-wide p-2">
-          <div class="mx-2 px-2 pb-3">
+          <div class="lg:mx-2 px-2 pb-3">
             <div
               class="flex items-center mt-1"
               v-if="totalReview.ratingPercentage"
@@ -62,7 +64,7 @@
               <div class="w-1/5 text-gray-700 tracking-tighter">
                 <span>{{ key }} star</span>
               </div>
-              <div class="w-3/5">
+              <div class="w-3/5 max-md:pl-2">
                 <div class="bg-gray-300 w-full rounded-lg h-2">
                   <div
                     class="w-0 rounded-lg h-2"
@@ -92,9 +94,11 @@
   </div>
   <div v-if="totalReview.rating == 0">No Rating Found</div>
   <div class="w-full flex justify-start items-start flex-col py-5 mt-2">
-    <div class="flex justify-between w-full items-center mb-5 pr-1">
+    <div
+      class="flex flex-col lg:flex-row justify-between w-full lg:items-center mb-5 pr-1"
+    >
       <h1 class="text-2xl font-medium text-gray-800">Customer Reviews</h1>
-      <div v-if="userStore.user">
+      <div v-if="userStore.user" class="max-lg:mt-2">
         <button
           v-if="ownReview.length > 0"
           class="bg-gray-100 border border-gray-400 px-3 py-1 rounded text-gray-800 hover:bg-blue-600 hover:text-white"
@@ -230,24 +234,26 @@
       v-if="productReviews.length > 0"
       v-for="(review, index) in productReviews"
     >
-      <div class="flex flex-col md:flex-row justify-between w-full pr-2">
-        <div class="flex flex-row justify-between items-start">
+      <div class="flex justify-between w-full md:pr-2">
+        <div class="flex flex-row justify-between items-start w-10/12">
           <p
-            class="text-xl font-normal leading-normal text-gray-800 dark:text-white"
+            class="text-lg md:text-xl font-normal leading-normal text-gray-800 dark:text-white"
           >
             {{ review.title }}
           </p>
         </div>
         <div
-          class="flex px-2 py-1 rounded"
+          class="flex px-2 py-1 rounded align-center h-7 md:h-8"
           :class="
             review.rating === 5 || review.rating === 4 || review.rating === 3
               ? 'bg-green-500'
               : 'bg-red-500'
           "
         >
-          <div class="text-white font-normal">{{ review.rating }}</div>
-          <StarIcon class="w-4 text-white" />
+          <div class="text-white font-normal max-md:text-sm">
+            {{ review.rating }}
+          </div>
+          <StarIcon class="w-3 md:w-4 text-white" />
         </div>
       </div>
       <div id="menu" class="md:block">
@@ -258,12 +264,12 @@
         </p>
         <div
           v-if="review.image.length < 5"
-          class="hidden md:flex mt-6 flex-row justify-start items-start space-x-4"
+          class="flex mt-6 flex-row justify-start items-start space-x-4"
         >
           <div v-for="(img, iteration) in review.image.slice(0, 4)">
             <img
               :src="img"
-              class="w-32 h-32 object-contain cursor-pointer"
+              class="w-16 md:w-32 h-16 md:h-32 object-contain cursor-pointer"
               alt="review_screenshot"
               @click="() => openImageModel(review.image, iteration)"
             />
@@ -271,7 +277,7 @@
         </div>
         <div
           v-else
-          class="hidden md:flex mt-6 flex-row justify-start items-start space-x-5"
+          class="flex mt-6 flex-row justify-start items-start space-x-5"
         >
           <div v-for="(img, iteration) in review.image.slice(0, 3)">
             <img
@@ -298,24 +304,22 @@
           </div>
         </div>
         <div
-          class="mt-6 flex justify-between items-center flex-row space-x-2.5"
+          class="mt-6 flex justify-between items-center flex-row md:space-x-2.5"
         >
-          <div class="flex flex-col justify-start items-start space-y-2">
-            <p
-              class="text-base font-medium leading-none text-gray-800 dark:text-white"
-            >
+          <div class="flex flex-col justify-start items-start">
+            <p class="text-base font-medium leading-none text-gray-800 pb-2">
               {{ review.reviewer }}
             </p>
-            <p class="text-sm leading-none text-gray-600 dark:text-white">
+            <p class="text-sm leading-none text-gray-600">
               {{ review.createdAt }}
             </p>
           </div>
-          <div class="flex px-3 space-x-8">
-            <div class="flex space-x-2">
-              <div class="cursor-pointer">
+          <div class="flex md:px-3 space-x-4 md:space-x-8">
+            <div class="flex space-x-1.5">
+              <div class="cursor-pointer flex">
                 <HandThumbUpIcon
                   v-if="review.isLiked"
-                  class="w-7 text-blue-500"
+                  class="w-6 md:w-7 h-6 md:h-7 text-blue-500"
                   @click="() => likeReviews(index, review.reviewId, 'LIKE')"
                 >
                 </HandThumbUpIcon>
@@ -332,7 +336,7 @@
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  class="w-7 h-7"
+                  class="w-6 md:w-7 h-6 md:h-7"
                 >
                   <path
                     stroke-linecap="round"
@@ -343,11 +347,11 @@
               </div>
               <div class="select-none">{{ review.totalLikes }}</div>
             </div>
-            <div class="flex space-x-2">
+            <div class="flex space-x-1.5">
               <div class="cursor-pointer">
                 <HandThumbDownIcon
                   v-if="review.isDisliked"
-                  class="w-7 text-blue-500"
+                  class="w-6 md:w-7 text-blue-500"
                   @click="() => likeReviews(index, review.reviewId, 'DISLIKE')"
                 ></HandThumbDownIcon>
                 <svg
@@ -363,7 +367,7 @@
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  class="w-7 h-7"
+                  class="w-6 md:w-7 h-6 md:h-7"
                 >
                   <path
                     stroke-linecap="round"
@@ -401,7 +405,10 @@
       </div>
     </div>
     <div v-if="totalReview.rating == 0">No customer reviews</div>
-    <div v-if="productReviews.length > 0" class="self-center">
+    <div
+      v-if="productReviews.length > 0 && pageCount?.lastPage > 1"
+      class="self-center"
+    >
       <div class="btn-group grid grid-cols-2">
         <button
           class="btn btn-outline btn-primary"

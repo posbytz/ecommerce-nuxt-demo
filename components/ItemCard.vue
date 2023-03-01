@@ -6,13 +6,13 @@
       >{{ discountPercentage }}%&nbsp;OFF</span
     >
     <div
-      class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl"
+      class="card card-compact indicator w-52 bg-base-100 border hover:shadow-xl max-md:w-72"
     >
-      <figure class="h-56">
+      <figure class="h-56 max-md:h-72">
         <img
           :src="item.images[0]"
           :alt="item.name"
-          class="h-full object-cover"
+          class="h-full object-contain"
         />
       </figure>
       <div class="card-body">
@@ -70,8 +70,8 @@
   const discountPercentage = computed({
     get() {
       if (item.value.inventory?.price < item.value.inventory?.mrp) {
-        return (
-          Math.floor(100 - (item.value.inventory?.price / item.value.inventory?.mrp) * 100)
+        return Math.floor(
+          100 - (item.value.inventory?.price / item.value.inventory?.mrp) * 100
         );
       }
 

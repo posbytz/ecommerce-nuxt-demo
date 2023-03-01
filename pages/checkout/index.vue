@@ -1,19 +1,21 @@
 <template>
   <div>
-    <div class="navbar bg-base-100 border-b px-20">
+    <div
+      class="navbar sticky top-0 z-10 bg-base-100 border-b px-5 lg:px-20 place-content-between max-md:w-full"
+    >
       <div class="flex-none">
         <div class="avatar mr-2">
-          <NuxtLink to="/" class="w-12 rounded">
+          <NuxtLink to="/" class="w-10 lg:w-12 rounded">
             <img :src="storeStore.logo" :alt="storeStore['brandName']" />
           </NuxtLink>
         </div>
       </div>
-      <div class="grow place-content-center px-4">
+      <div class="grow-0 lg:grow place-content-center pr-2 lg:px-4">
         <ul class="steps">
           <li
             v-for="(stepInfo, i) in steps"
             :data-content="step > i ? '✓' : step === i ? '●' : ''"
-            class="step w-28 cursor-pointer"
+            class="step md:w-24 lg:w-28 cursor-pointer max-md:text-xs"
             :class="{
               'step-primary': step >= i,
             }"
@@ -25,11 +27,14 @@
       </div>
       <div class="flex-none">
         <ShieldCheckIcon class="w-8 text-primary mr-1" />
-        <p class="text-slate-500">100% SECURE</p>
+        <p class="max-md:hidden text-slate-500">100% SECURE</p>
       </div>
     </div>
-    <div v-if="cartStore.cart?.items.length" class="flex mx-48">
-      <div class="w-4/6 px-3 pt-3 pb-5">
+    <div
+      v-if="cartStore.cart?.items.length"
+      class="flex flex-col md:flex-row lg:mx-48"
+    >
+      <div class="w-full md:w-4/6 px-3 pt-3 pb-5">
         <template v-if="step === 0">
           <div class="flex items-center justify-between mb-3">
             <p class="font-medium">{{ cartStore.cart.items.length }} Items</p>
@@ -53,10 +58,10 @@
                 <img :src="cartItem?.image" :alt="`Product-${index + 1}`" />
               </div>
             </div>
-            <div class="card-body justify-between p-4">
+            <div class="card-body justify-between p-3 md:p-4">
               <div class="flex justify-between">
                 <div class="leading-none">
-                  <h2 class="font-medium">
+                  <h2 class="font-medium max-md:text-sm">
                     {{ cartItem.name }}
                   </h2>
                   <small class="text-slate-400">{{
@@ -160,7 +165,7 @@
             class="card min-h-[300px] rounded border bg-base-100 drop-shadow"
           >
             <div class="flex">
-              <ul class="menu w-96 rounded-tl rounded-bl bg-base-100">
+              <ul class="menu w-full md:w-96 rounded-tl rounded-bl bg-base-100">
                 <li
                   v-for="paymentMethod in storeStore.paymentMethods"
                   :class="{
@@ -188,7 +193,7 @@
         </template>
       </div>
       <div class="divider divider-horizontal m-0" />
-      <div class="w-2/6 p-3">
+      <div class="max-md:sticky max-md:bottom-0 max-md:z-10 max-md:bg-white w-full md:w-2/6 p-3 max-md:pb-6">
         <!-- <ul class="menu border mb-4">
           <li>
             <a> <TagIcon class="w-5" />Apply Coupon </a>
@@ -249,11 +254,14 @@
         </button>
       </div>
     </div>
-    <div v-else class="flex min-h-[calc(100vh-81px)] text-center py-4">
+    <div
+      v-else
+      class="flex min-h-[calc(100vh-160px)] md:min-h-[calc(100vh-81px)] text-center py-4"
+    >
       <div class="m-auto">
         <img src="/images/cart.svg" alt="Cart" class="m-auto w-64 mb-4" />
         <h1 class="text-2xl font-medium mt-2">Hey, it feels so light!</h1>
-        <p class="text-slate-400 mb-4">
+        <p class="text-slate-400 mb-4 max-md:px-10">
           There is nothing in your cart. Let's add some items
         </p>
         <NuxtLink
@@ -263,7 +271,7 @@
         </NuxtLink>
       </div>
     </div>
-    <div class="flex items-center justify-between border-t px-20 py-4">
+    <div class="flex items-center justify-between border-t px-8 md:px-20 py-4">
       <div>
         <div class="flex w-fit border p-1">
           <LockClosedIcon class="w-8 text-slate-400" />

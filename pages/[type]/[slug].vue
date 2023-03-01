@@ -67,7 +67,7 @@
             <label class="label cursor-pointer justify-start">
               <input
                 type="radio"
-                name="radio-10"
+                name="sort_item"
                 class="radio checked:bg-blue-500 mr-3"
                 :value="JSON.stringify({ 'sort[createdAt]': '-1' })"
                 :checked="route.query['sort[inventories.price]'] === '1'"
@@ -80,7 +80,7 @@
             <label class="label cursor-pointer justify-start">
               <input
                 type="radio"
-                name="radio-10"
+                name="sort_item"
                 class="radio checked:bg-blue-500 mr-3"
                 :value="JSON.stringify({ 'sort[inventories.price]': '1' })"
                 :checked="route.query['sort[inventories.price]'] === '1'"
@@ -93,7 +93,7 @@
             <label class="label cursor-pointer justify-start">
               <input
                 type="radio"
-                name="radio-10"
+                name="sort_item"
                 class="radio checked:bg-blue-500 mr-3"
                 :value="JSON.stringify({ 'sort[inventories.price]': '-1' })"
                 :checked="route.query['sort[inventories.price]'] === '-1'"

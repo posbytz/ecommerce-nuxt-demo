@@ -2,25 +2,25 @@
   <div class="grow-0 lg:grow lg:px-4">
     <div class="relative form-control w-full">
       <MagnifyingGlassIcon
-        class="absolute h-4 w-4 top-2 left-2 text-slate-500"
+        class="absolute h-6 lg:h-4 w-5 lg:w-6 top-2 left-2 text-slate-500"
       />
       <input
         ref="searchInput"
         type="search"
         placeholder="Search for products, brands and more"
-        class="input input-sm bg-base-200 focus:bg-base-100 pl-8"
+        class="input input-sm bg-base-200 focus:bg-base-100 pl-10 lg:pl-8 max-lg:py-5"
         @input="search"
       />
       <div
         v-if="
           searchResult.categories?.length > 0 || searchResult.items?.length > 0
         "
-        class="absolute dropdown dropdown-open left-0 right-0 top-9"
+        class="absolute dropdown dropdown-open left-0 right-0 top-12 lg:top-9"
         @click="modal.hideSearchToast"
       >
         <ul
           tabindex="0"
-          class="dropdown-content menu p-2 shadow bg-base-100 w-full"
+          class="dropdown-content menu p-2 lg:shadow bg-base-100 w-full"
         >
           <template v-if="searchResult.categories?.length">
             <li class="menu-title">

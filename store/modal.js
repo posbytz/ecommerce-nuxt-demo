@@ -8,9 +8,11 @@ export const useModalStore = defineStore('modal', {
     actions: {
         showSearchToast() {
             this.searchModal = true
+            document.body.classList.add('overflow-hidden');
         },
         hideSearchToast() {
             this.searchModal = false
+            document.body.classList.remove('overflow-hidden');
         }
     }
 })

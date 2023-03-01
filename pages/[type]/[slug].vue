@@ -28,30 +28,24 @@
     </div>
     <div class="md:flex justify-between items-center mb-3">
       <p class="font-semibold max-md:hidden">Filters</p>
-      <div class="form-control max-md:hidden" ref="sortModalParent">
-        <label class="input-group max-md:flex-col" ref="sortModalChild">
-          <span
-            class="max-md:my-5 max-md:text-xl max-md:font-semibold max-md:bg-white"
-            >Sort by:</span
-          >
+      <div class="form-control max-md:hidden">
+        <label class="input-group">
+          <span class="">Sort by:</span>
           <select
             class="select select-sm select-bordered"
             @change="onChangeSortBy"
-            ref="selectBox"
           >
-            <option class="max-md:text-lg max-md:py-2">Recommended</option>
+            <!-- <option class="">Recommended</option> -->
             <option
               :value="JSON.stringify({ 'sort[createdAt]': '-1' })"
               :selected="route.query['sort[createdAt]'] === '-1'"
-              class="max-md:text-lg max-md:py-2"
             >
               What's new
             </option>
-            <option class="max-md:text-lg max-md:py-2">Popularity</option>
+            <!-- <option class="">Popularity</option> -->
             <option
               :value="JSON.stringify({ 'sort[inventories.price]': '1' })"
               :selected="route.query['sort[inventories.price]'] === '1'"
-              class="max-md:text-lg max-md:py-2"
             >
               Price low to high
             </option>
@@ -62,20 +56,67 @@
             >
               Price high to low
             </option>
-            <option class="max-md:text-lg max-md:py-2">Customer rating</option>
+            <!-- <option class="max-md:text-lg max-md:py-2">Customer rating</option> -->
           </select>
-          <div class="p-8 space-x-4 absolute bottom-0 md:hidden">
-            <button class="btn btn-error btn-sm" @click="closeSortModal">
-              Close
-            </button>
+        </label>
+      </div>
+      <div class="modal md:hidden" ref="sortModal">
+        <div class="modal-box justify-center min-h-full w-full rounded-none">
+          <p class="font-medium mb-2 text-xl ml-1">Sort by:</p>
+          <div class="form-control mb-1">
+            <label class="label cursor-pointer justify-start">
+              <input
+                type="radio"
+                name="radio-10"
+                class="radio checked:bg-blue-500 mr-3"
+                :value="JSON.stringify({ 'sort[createdAt]': '-1' })"
+                :checked="route.query['sort[inventories.price]'] === '1'"
+                @change="onChangeSortBy"
+              />
+              <span class="label-text text-lg bg-white">What's new</span>
+            </label>
+          </div>
+          <div class="form-control mb-1">
+            <label class="label cursor-pointer justify-start">
+              <input
+                type="radio"
+                name="radio-10"
+                class="radio checked:bg-blue-500 mr-3"
+                :value="JSON.stringify({ 'sort[inventories.price]': '1' })"
+                :checked="route.query['sort[inventories.price]'] === '1'"
+                @change="onChangeSortBy"
+              />
+              <span class="label-text text-lg bg-white">Price high to low</span>
+            </label>
+          </div>
+          <div class="form-control mb-1">
+            <label class="label cursor-pointer justify-start">
+              <input
+                type="radio"
+                name="radio-10"
+                class="radio checked:bg-blue-500 mr-3"
+                :value="JSON.stringify({ 'sort[inventories.price]': '-1' })"
+                :checked="route.query['sort[inventories.price]'] === '-1'"
+                @change="onChangeSortBy"
+              />
+              <span class="label-text text-lg bg-white">Price low to high</span>
+            </label>
+          </div>
+          <div class="btm-nav space-x-0.5 md:hidden">
             <button
-              class="btn btn-outline btn-primary btn-sm"
+              class="bg-error text-white font-semibold uppercase text-lg"
               @click="closeSortModal"
             >
-              Apply Sort
+              <span class="btm-nav-label bg-error">Close</span>
+            </button>
+            <button
+              class="bg-primary text-white font-semibold uppercase text-lg"
+              @click="closeSortModal"
+            >
+              <span class="btm-nav-label bg-primary">Apply</span>
             </button>
           </div>
-        </label>
+        </div>
       </div>
     </div>
     <div class="flex border-t" ref="filterModalParent">
@@ -100,7 +141,7 @@
           <div class="divider my-2" />
         </template>
         <template v-if="items?.filters.brand.length && type !== 'brand'">
-          <p class="font-medium mb-2">Brand</p>
+          <p class="font-medium mb-2 max-md:text-xl">Brand</p>
           <div
             v-for="(brand, i) in items.filters.brand"
             :key="brand._id"
@@ -115,7 +156,7 @@
                 :value="brand._id"
                 @change="onChangeFilters"
               />
-              <span class="label-text">{{ brand.name }}</span>
+              <span class="label-text max-md:text-lg">{{ brand.name }}</span>
               <span class="text-slate-400 text-2xs ml-1"
                 >({{ brand.count }})</span
               >
@@ -124,7 +165,7 @@
           <div class="divider my-2" />
         </template>
         <template v-if="items?.filters.price.length">
-          <p class="font-medium mb-2">Price</p>
+          <p class="font-medium mb-2 max-md:text-xl">Price</p>
           <div
             v-for="(priceRange, i) in items.filters.price"
             :key="`${priceRange._id.min}-${priceRange._id.max}`"
@@ -141,7 +182,7 @@
                 "
                 @change="onChangeFilters"
               />
-              <span class="label-text"
+              <span class="label-text max-md:text-lg"
                 >{{ $n(priceRange._id.min || 0, 'currency', 'en-US') }} to
                 {{ $n(priceRange._id.max || 0, 'currency', 'en-US') }}</span
               >
@@ -199,15 +240,18 @@
             </label>
           </div>
         </template>
-        <div class="p-8 space-x-4 absolute bottom-0 md:hidden">
-          <button class="btn btn-error btn-sm" @click="closeFilterModal">
-            Close
-          </button>
+        <div class="btm-nav space-x-0.5 md:hidden">
           <button
-            class="btn btn-outline btn-primary btn-sm"
+            class="bg-error text-white font-semibold uppercase text-lg"
             @click="closeFilterModal"
           >
-            Apply Filters
+            <span class="btm-nav-label">Close</span>
+          </button>
+          <button
+            class="bg-primary text-white font-semibold uppercase text-lg"
+            @click="closeFilterModal"
+          >
+            <span class="btm-nav-label">Apply</span>
           </button>
         </div>
       </div>
@@ -225,7 +269,7 @@
           <Pagination :options="items.pagination" @change="refreshItems" />
         </div>
       </div>
-      <div class="btm-nav md:hidden z-10">
+      <div class="btm-nav md:hidden z-10" ref="bottomNav">
         <button class="bg-slate-200" @click="openFilterModal">
           <div class="flex">
             <AdjustmentsHorizontalIcon
@@ -257,9 +301,8 @@
   const filterModalParent = ref(null);
   const filterModalChild = ref(null);
   const itemRef = ref(null);
-  const sortModalParent = ref(null);
-  const sortModalChild = ref(null);
-  const selectBox = ref(null);
+  const sortModal = ref(null);
+  const bottomNav = ref(null);
 
   const { data: category } =
     type !== 'brand' &&
@@ -360,52 +403,44 @@
 
   const openFilterModal = () => {
     filterModalParent.value.classList.add('modal', 'modal-open');
-    filterModalChild.value.classList.add('w-11/12', 'h-4/6', 'modal-box');
+    filterModalChild.value.classList.add(
+      'w-full',
+      'min-h-full',
+      'modal-box',
+      'rounded-none'
+    );
     filterModalChild.value.classList.remove('max-md:hidden', 'w-1/5');
     itemRef.value.classList.remove('w-full');
     itemRef.value.classList.add('hidden');
+    bottomNav.value.classList.add('hidden');
+    document.body.classList.add('overflow-hidden');
   };
   const closeFilterModal = () => {
     filterModalParent.value.classList.remove('modal', 'modal-open');
-    filterModalChild.value.classList.remove('w-11/12', 'h-4/6', 'modal-box');
+    filterModalChild.value.classList.remove(
+      'w-full',
+      'min-h-full',
+      'modal-box',
+      'rounded-none'
+    );
     filterModalChild.value.classList.add('max-md:hidden', 'w-1/5');
     itemRef.value.classList.add('w-full');
     itemRef.value.classList.remove('hidden');
+    bottomNav.value.classList.remove('hidden');
+    document.body.classList.remove('overflow-hidden');
   };
 
   const openSortModel = () => {
-    selectBox.value.setAttribute('size', '6');
-    sortModalParent.value.classList.add('modal', 'modal-open');
-    sortModalParent.value.classList.remove('max-md:hidden');
-    sortModalChild.value.classList.add('modal-box', 'justify-center', 'h-4/6');
-    selectBox.value.classList.add(
-      'w-full',
-      'h-5/6',
-      'border-0',
-      'outline-none',
-      'focus:outline-none'
-    );
-    selectBox.value.classList.remove('select-bordered');
+    sortModal.value.classList.add('modal-open');
     itemRef.value.classList.add('hidden');
+    bottomNav.value.classList.add('hidden');
+    document.body.classList.add('overflow-hidden');
   };
 
   const closeSortModal = () => {
-    selectBox.value.removeAttribute('size');
-    sortModalParent.value.classList.remove('modal', 'modal-open');
-    sortModalParent.value.classList.add('max-md:hidden');
-    sortModalChild.value.classList.remove(
-      'modal-box',
-      'justify-center',
-      'h-4/6'
-    );
-    selectBox.value.classList.remove(
-      'w-full',
-      'h-5/6',
-      'border-0',
-      'outline-none',
-      'focus:outline-none'
-    );
-    selectBox.value.classList.add('select-bordered');
+    sortModal.value.classList.remove('modal-open');
     itemRef.value.classList.remove('hidden');
+    bottomNav.value.classList.remove('hidden');
+    document.body.classList.remove('overflow-hidden');
   };
 </script>

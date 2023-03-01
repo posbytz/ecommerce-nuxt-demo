@@ -1,10 +1,13 @@
 <template>
   <div class="modal" :class="modal.searchModal ? 'modal-open' : ''">
-    <div class="modal-box w-9/10 h-2/4">
+    <div class="modal-box w-full md:min-w-full min-h-full rounded-none">
       <Search></Search>
-      <div class="p-6 absolute bottom-0 right-0">
-        <button class="btn btn-error btn-sm" @click="modal.hideSearchToast">
-          Cancel
+      <div class="btm-nav">
+        <button
+          class="bg-error font-semibold uppercase text-lg"
+          @click="modal.hideSearchToast"
+        >
+          <span class="btm-nav-label">Cancel</span>
         </button>
       </div>
     </div>
